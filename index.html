@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>XEarnings — Creator Revenue Calculator</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:#0a0a0a;--surface:#111;--surface2:#181818;
+    --border:rgba(255,255,255,0.07);--border2:rgba(255,255,255,0.12);
+    --text:#f0f0f0;--muted:#666;--muted2:#999;
+    --accent:#e7ff52;--accent-dim:rgba(231,255,82,0.12);--accent-dim2:rgba(231,255,82,0.05);
+    --green:#4ade80;--green-dim:rgba(74,222,128,0.1);
+    --red:#f87171;--amber:#fbbf24;
+    --radius:12px;--radius-sm:8px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;font-size:15px;line-height:1.6;min-height:100vh;}
+  body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");pointer-events:none;z-index:0;}
+  body::after{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(255,255,255,0.02) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.02) 1px,transparent 1px);background-size:60px 60px;pointer-events:none;z-index:0;}
+  .page{position:relative;z-index:1;max-width:1100px;margin:0 auto;padding:0 24px 80px;}
+  nav{display:flex;align-items:center;justify-content:space-between;padding:28px 0 48px;}
+  .logo{display:flex;align-items:center;gap:10px;font-family:'Syne',sans-serif;font-weight:800;font-size:20px;letter-spacing:-0.02em;color:var(--text);text-decoration:none;}
+  .logo-x{width:32px;height:32px;background:var(--accent);border-radius:8px;display:flex;align-items:center;justify-content:center;}
+  .logo-x svg{width:16px;height:16px;fill:#0a0a0a;}
+  .nav-badge{font-family:'DM Mono',monospace;font-size:11px;color:var(--accent);background:var(--accent-dim);border:1px solid rgba(231,255,82,0.2);padding:4px 10px;border-radius:20px;}
+  .hero{margin-bottom:48px;}
+  .hero-eyebrow{font-family:'DM Mono',monospace;font-size:11px;color:var(--muted2);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:16px;display:flex;align-items:center;gap:8px;}
+  .hero-eyebrow::before{content:'';display:inline-block;width:20px;height:1px;background:var(--muted);}
+  .hero h1{font-family:'Syne',sans-serif;font-size:clamp(36px,6vw,68px);font-weight:800;line-height:1.0;letter-spacing:-0.03em;margin-bottom:18px;}
+  .hero h1 em{font-style:normal;color:var(--accent);}
+  .hero-sub{font-size:15px;color:var(--muted2);max-width:500px;line-height:1.7;}
+
+  /* CONNECT */
+  .connect-card{background:var(--surface);border:1px solid var(--border2);border-radius:var(--radius);padding:28px 32px;margin-bottom:24px;display:flex;align-items:flex-start;gap:22px;}
+  .connect-icon{width:48px;height:48px;flex-shrink:0;background:var(--accent-dim);border:1px solid rgba(231,255,82,0.2);border-radius:12px;display:flex;align-items:center;justify-content:center;}
+  .connect-icon svg{width:20px;height:20px;fill:var(--accent);}
+  .connect-content{flex:1;}
+  .connect-content h3{font-family:'Syne',sans-serif;font-weight:700;font-size:17px;margin-bottom:6px;}
+  .connect-content p{font-size:13px;color:var(--muted2);margin-bottom:18px;line-height:1.6;}
+  .connect-actions{display:flex;align-items:center;gap:12px;flex-wrap:wrap;}
+  .btn-primary{display:inline-flex;align-items:center;gap:8px;background:var(--accent);color:#0a0a0a;border:none;border-radius:var(--radius-sm);padding:10px 20px;font-family:'Syne',sans-serif;font-weight:700;font-size:13px;cursor:pointer;transition:opacity .15s,transform .1s;text-decoration:none;}
+  .btn-primary:hover{opacity:.88;}
+  .btn-primary:active{transform:scale(.98);}
+  .btn-primary svg{width:14px;height:14px;fill:#0a0a0a;}
+  .btn-ghost{display:inline-flex;align-items:center;gap:6px;background:transparent;color:var(--muted2);border:1px solid var(--border2);border-radius:var(--radius-sm);padding:10px 16px;font-size:13px;cursor:pointer;transition:color .15s,border-color .15s;}
+  .btn-ghost:hover{color:var(--text);border-color:var(--muted);}
+  .oauth-steps{display:flex;gap:0;margin-top:20px;padding-top:20px;border-top:1px solid var(--border);}
+  .oauth-step{flex:1;padding-right:16px;}
+  .oauth-step:not(:last-child){border-right:1px solid var(--border);margin-right:16px;}
+  .step-num{font-family:'DM Mono',monospace;font-size:10px;color:var(--accent);margin-bottom:4px;}
+  .step-text{font-size:12px;color:var(--muted);line-height:1.5;}
+  .step-text code{font-family:'DM Mono',monospace;font-size:11px;background:rgba(255,255,255,0.07);padding:1px 5px;border-radius:3px;color:var(--muted2);}
+
+  /* ERROR / SUCCESS BANNERS */
+  .banner{padding:12px 18px;border-radius:var(--radius-sm);font-size:13px;margin-bottom:20px;display:none;}
+  .banner.error{background:rgba(248,113,113,0.08);border:1px solid rgba(248,113,113,0.2);color:var(--red);}
+  .banner.success{background:rgba(74,222,128,0.08);border:1px solid rgba(74,222,128,0.2);color:var(--green);}
+
+  /* PROFILE */
+  .profile-card{background:var(--surface);border:1px solid rgba(231,255,82,0.2);border-radius:var(--radius);padding:24px 28px;margin-bottom:24px;display:none;}
+  .profile-top{display:flex;align-items:center;gap:14px;margin-bottom:20px;}
+  .profile-avatar{width:48px;height:48px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:800;font-size:16px;color:#0a0a0a;flex-shrink:0;}
+  .profile-name{font-family:'Syne',sans-serif;font-weight:700;font-size:16px;}
+  .profile-handle{font-size:13px;color:var(--muted2);}
+  .profile-verified{margin-left:auto;display:flex;align-items:center;gap:6px;font-family:'DM Mono',monospace;font-size:11px;color:var(--accent);background:var(--accent-dim);padding:4px 10px;border-radius:20px;}
+  .profile-stats{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;}
+  .pstat-label{font-size:11px;color:var(--muted);margin-bottom:2px;}
+  .pstat-val{font-family:'Syne',sans-serif;font-weight:700;font-size:15px;}
+  .disconnect-link{font-size:12px;color:var(--muted);cursor:pointer;text-decoration:underline;text-underline-offset:3px;background:none;border:none;padding:0;margin-top:14px;display:inline-block;}
+  .disconnect-link:hover{color:var(--red);}
+
+  /* ELIGIBILITY */
+  .elig{display:flex;align-items:center;gap:10px;padding:12px 16px;border-radius:var(--radius-sm);font-size:13px;margin-bottom:20px;}
+  .elig.ok{background:rgba(74,222,128,0.08);border:1px solid rgba(74,222,128,0.2);color:var(--green);}
+  .elig.warn{background:rgba(251,191,36,0.08);border:1px solid rgba(251,191,36,0.2);color:var(--amber);}
+  .elig-dot{width:6px;height:6px;border-radius:50%;background:currentColor;flex-shrink:0;}
+
+  /* EARNINGS */
+  .grid5{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;margin-bottom:28px;}
+  .earn-card{background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:14px;}
+  .earn-card.highlight{border-color:rgba(231,255,82,0.25);background:var(--accent-dim2);}
+  .earn-label{font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;}
+  .earn-val{font-family:'Syne',sans-serif;font-weight:800;font-size:18px;color:var(--text);}
+  .earn-card.highlight .earn-val{color:var(--accent);}
+
+  /* MAIN GRID */
+  .main-grid{display:grid;grid-template-columns:1fr 360px;gap:24px;align-items:start;}
+  .panel{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;}
+  .panel-header{padding:16px 24px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+  .panel-title{font-family:'Syne',sans-serif;font-weight:700;font-size:12px;letter-spacing:.04em;text-transform:uppercase;color:var(--muted2);}
+  .panel-body{padding:22px 24px;}
+
+  /* SLIDERS */
+  .slider-group{margin-bottom:20px;}
+  .slider-label{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px;}
+  .slider-name{font-size:13px;color:var(--muted2);}
+  .slider-val{font-family:'DM Mono',monospace;font-size:13px;font-weight:500;color:var(--text);}
+  input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:2px;background:var(--border2);border-radius:1px;outline:none;cursor:pointer;}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;border-radius:50%;background:var(--accent);cursor:pointer;transition:transform .1s;}
+  input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.2);}
+  select{width:100%;background:var(--surface2);border:1px solid var(--border2);border-radius:var(--radius-sm);color:var(--text);padding:10px 12px;font-family:'DM Sans',sans-serif;font-size:13px;cursor:pointer;outline:none;appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23666' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;}
+
+  /* BREAKDOWN */
+  .brow{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid var(--border);font-size:13px;}
+  .brow:last-child{border-bottom:none;}
+  .brow-label{color:var(--muted2);}
+  .brow-val{font-family:'DM Mono',monospace;font-size:12px;color:var(--text);}
+  .brow-val.green{color:var(--green);}
+  .score-bar-wrap{margin:4px 0 18px;background:var(--border);border-radius:2px;height:3px;overflow:hidden;}
+  .score-bar{height:100%;background:var(--accent);border-radius:2px;transition:width .3s ease;}
+  .formula{background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:16px;font-family:'DM Mono',monospace;font-size:11px;color:var(--muted);line-height:2;margin-top:16px;}
+  .formula .key{color:var(--accent);}
+  .formula .dim{color:var(--muted);}
+
+  footer{margin-top:60px;padding-top:24px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;font-size:12px;color:var(--muted);flex-wrap:wrap;gap:8px;}
+  footer a{color:var(--muted2);text-decoration:none;}
+  footer a:hover{color:var(--text);}
+
+  @keyframes fadeUp{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
+  .hero,.connect-card,.profile-card,.main-grid{animation:fadeUp .45s ease both;}
+  .main-grid{animation-delay:.08s;}
+
+  @media(max-width:800px){
+    .main-grid{grid-template-columns:1fr;}
+    .profile-stats{grid-template-columns:repeat(3,1fr);}
+    .connect-card{flex-direction:column;}
+    .oauth-steps{flex-direction:column;gap:12px;}
+    .oauth-step{border-right:none!important;margin-right:0!important;}
+    .grid5{grid-template-columns:repeat(3,1fr);}
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <nav>
+    <a href="/" class="logo">
+      <span class="logo-x">
+        <svg viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.748l7.73-8.835L1.254 2.25H8.08l4.253 5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+      </span>
+      XEarnings
+    </a>
+    <span class="nav-badge">Jan 2026 Algorithm</span>
+  </nav>
+
+  <section class="hero">
+    <p class="hero-eyebrow">Creator revenue calculator</p>
+    <h1>How much is your<br>content <em>actually</em> worth?</h1>
+    <p class="hero-sub">Built on X's open-sourced Grok algorithm. Connect your account and your real stats auto-fill — no guessing.</p>
+  </section>
+
+  <div id="banner-error" class="banner error"></div>
+  <div id="banner-success" class="banner success"></div>
+
+  <!-- CONNECT (shown when not logged in) -->
+  <div class="connect-card" id="connect-section">
+    <div class="connect-icon">
+      <svg viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.748l7.73-8.835L1.254 2.25H8.08l4.253 5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+    </div>
+    <div class="connect-content">
+      <h3>Connect your X account</h3>
+      <p>Sign in with X OAuth 2.0 — your follower count, verified ratio, and average engagement pull in automatically. Your credentials never touch this server beyond the auth handshake.</p>
+      <div class="connect-actions">
+        <a href="/auth/x" class="btn-primary">
+          <svg viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.748l7.73-8.835L1.254 2.25H8.08l4.253 5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+          Sign in with X
+        </a>
+        <button class="btn-ghost" onclick="loadDemo()">Use demo data</button>
+      </div>
+      <div class="oauth-steps">
+        <div class="oauth-step">
+          <div class="step-num">01 — Authorise</div>
+          <div class="step-text">You approve access on x.com — we never see your password</div>
+        </div>
+        <div class="oauth-step">
+          <div class="step-num">02 — Callback</div>
+          <div class="step-text">X sends a one-time code to <code>/callback</code> on this server</div>
+        </div>
+        <div class="oauth-step">
+          <div class="step-num">03 — Auto-fill</div>
+          <div class="step-text">Your real followers, engagement, and post rate fill the calculator</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PROFILE (shown when logged in) -->
+  <div class="profile-card" id="profile-card">
+    <div class="profile-top">
+      <div class="profile-avatar" id="p-avatar">—</div>
+      <div>
+        <div class="profile-name" id="p-name">—</div>
+        <div class="profile-handle" id="p-handle">—</div>
+      </div>
+      <div class="profile-verified">
+        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+        Connected
+      </div>
+    </div>
+    <div class="profile-stats">
+      <div><div class="pstat-label">Followers</div><div class="pstat-val" id="p-followers">—</div></div>
+      <div><div class="pstat-label">Following</div><div class="pstat-val" id="p-following">—</div></div>
+      <div><div class="pstat-label">Posts / week</div><div class="pstat-val" id="p-posts">—</div></div>
+      <div><div class="pstat-label">Avg. likes</div><div class="pstat-val" id="p-likes">—</div></div>
+      <div><div class="pstat-label">Premium %</div><div class="pstat-val" id="p-prem">—</div></div>
+    </div>
+    <button class="disconnect-link" onclick="disconnect()">Disconnect account</button>
+  </div>
+
+  <!-- ELIGIBILITY -->
+  <div class="elig ok" id="elig-banner">
+    <span class="elig-dot"></span>
+    <span id="elig-text">Eligible for Creator Revenue Sharing</span>
+  </div>
+
+  <!-- EARNINGS -->
+  <div class="grid5">
+    <div class="earn-card"><div class="earn-label">Weekly</div><div class="earn-val" id="e-weekly">$0.00</div></div>
+    <div class="earn-card highlight"><div class="earn-label">Biweekly</div><div class="earn-val" id="e-biweekly">$0.00</div></div>
+    <div class="earn-card"><div class="earn-label">Monthly</div><div class="earn-val" id="e-monthly">$0.00</div></div>
+    <div class="earn-card"><div class="earn-label">Quarterly</div><div class="earn-val" id="e-quarterly">$0.00</div></div>
+    <div class="earn-card"><div class="earn-label">Annual</div><div class="earn-val" id="e-annual">$0.00</div></div>
+  </div>
+
+  <!-- MAIN GRID -->
+  <div class="main-grid">
+    <div class="panel">
+      <div class="panel-header">
+        <span class="panel-title">Post performance</span>
+        <span id="autofill-badge" style="font-size:11px;color:var(--accent);display:none;">Auto-filled from X</span>
+      </div>
+      <div class="panel-body">
+        <div class="slider-group">
+          <div class="slider-label"><span class="slider-name">Posts per week</span><span class="slider-val" id="lbl-posts">7</span></div>
+          <input type="range" id="s-posts" min="1" max="21" value="7" step="1">
+        </div>
+        <div class="slider-group">
+          <div class="slider-label"><span class="slider-name">Avg. likes per post</span><span class="slider-val" id="lbl-likes">200</span></div>
+          <input type="range" id="s-likes" min="0" max="5000" value="200" step="10">
+        </div>
+        <div class="slider-group">
+          <div class="slider-label"><span class="slider-name">Avg. retweets per post</span><span class="slider-val" id="lbl-rt">40</span></div>
+          <input type="range" id="s-rt" min="0" max="1000" value="40" step="5">
+        </div>
+        <div class="slider-group">
+          <div class="slider-label"><span class="slider-name">Avg. replies per post</span><span class="slider-val" id="lbl-rep">20</span></div>
+          <input type="range" id="s-rep" min="0" max="500" value="20" step="5">
+        </div>
+        <div class="slider-group">
+          <div class="slider-label"><span class="slider-name">Avg. bookmarks per post</span><span class="slider-val" id="lbl-bm">30</span></div>
+          <input type="range" id="s-bm" min="0" max="500" value="30" step="5">
+        </div>
+        <div class="slider-group">
+          <div class="slider-label"><span class="slider-name">Total followers</span><span class="slider-val" id="lbl-fol">10,000</span></div>
+          <input type="range" id="s-fol" min="500" max="500000" value="10000" step="500">
+        </div>
+        <div class="slider-group">
+          <div class="slider-label"><span class="slider-name">Premium followers %</span><span class="slider-val" id="lbl-prem">10%</span></div>
+          <input type="range" id="s-prem" min="1" max="40" value="10" step="1">
+        </div>
+        <div class="slider-group" style="margin-bottom:0;">
+          <div class="slider-label" style="margin-bottom:8px;"><span class="slider-name">Audience region</span></div>
+          <select id="s-region">
+            <option value="12">United States / Canada — $12 CPM</option>
+            <option value="9">UK / Western Europe — $9 CPM</option>
+            <option value="5" selected>Global mix — $5 CPM</option>
+            <option value="2">West Africa / South Asia — $2 CPM</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:16px;">
+      <div class="panel">
+        <div class="panel-header">
+          <span class="panel-title">Algorithm score</span>
+          <span style="font-family:'DM Mono',monospace;font-size:13px;color:var(--accent);" id="score-display">0</span>
+        </div>
+        <div class="panel-body" style="padding-top:16px;padding-bottom:16px;">
+          <div class="score-bar-wrap"><div class="score-bar" id="score-bar" style="width:0%"></div></div>
+          <div class="brow"><span class="brow-label">Likes × 1</span><span class="brow-val" id="bd-likes">—</span></div>
+          <div class="brow"><span class="brow-label">Retweets × 20</span><span class="brow-val" id="bd-rt">—</span></div>
+          <div class="brow"><span class="brow-label">Replies × 13.5</span><span class="brow-val" id="bd-rep">—</span></div>
+          <div class="brow" style="border-bottom:none;"><span class="brow-label">Bookmarks × 10</span><span class="brow-val" id="bd-bm">—</span></div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-header">
+          <span class="panel-title">Revenue / post</span>
+          <span class="brow-val green" id="rev-per-post" style="font-family:'DM Mono',monospace;font-size:13px;color:var(--green);">—</span>
+        </div>
+        <div class="panel-body" style="padding-top:16px;padding-bottom:16px;">
+          <div class="brow"><span class="brow-label">Monetisable impressions</span><span class="brow-val" id="bd-imp">—</span></div>
+          <div class="brow"><span class="brow-label">CPM (region)</span><span class="brow-val" id="bd-cpm">—</span></div>
+          <div class="brow"><span class="brow-label">Creator share</span><span class="brow-val">52.5%</span></div>
+          <div class="brow" style="border-bottom:none;"><span class="brow-label">Posts this week</span><span class="brow-val" id="bd-posts">—</span></div>
+        </div>
+      </div>
+
+      <div class="formula">
+        <span class="key">Score</span> = likes×1 + rt×20 + rep×13.5 + bm×10<br>
+        <span class="key">Impressions</span> = followers × reach% × premium%<br>
+        <span class="key">Revenue</span> = (impressions÷1000) × CPM × 0.525<br>
+        <span class="dim">Source: xai-org/x-algorithm · Jan 2026</span>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <span>XEarnings — estimates based on xai-org/x-algorithm (Jan 2026). Not financial advice.</span>
+    <span>
+      <a href="https://github.com/xai-org/x-algorithm" target="_blank">Algorithm source</a> &nbsp;·&nbsp;
+      <a href="https://developer.x.com/en/docs/authentication/oauth-2-0" target="_blank">X OAuth docs</a>
+    </span>
+  </footer>
+</div>
+
+<script>
+  const cpmMap={'12':12,'9':9,'5':5,'2':2};
+  function fmt(n){return n.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});}
+  function fmtInt(n){return Math.round(n).toLocaleString();}
+
+  function setSlider(id,val){
+    const el=document.getElementById(id);
+    el.value=Math.min(Math.max(val,+el.min),+el.max);
+  }
+
+  function applyProfile(p){
+    document.getElementById('p-avatar').textContent=p.initials||'?';
+    document.getElementById('p-name').textContent=p.name||'—';
+    document.getElementById('p-handle').textContent=p.handle||'';
+    document.getElementById('p-followers').textContent=(p.followers||0).toLocaleString();
+    document.getElementById('p-following').textContent=(p.following||0).toLocaleString();
+    document.getElementById('p-posts').textContent=p.posts_per_week||'—';
+    document.getElementById('p-likes').textContent=(p.avg_likes||0).toLocaleString();
+    document.getElementById('p-prem').textContent=(p.premium_pct||10)+'%';
+    document.getElementById('connect-section').style.display='none';
+    document.getElementById('profile-card').style.display='block';
+    document.getElementById('autofill-badge').style.display='block';
+    if(p.posts_per_week) setSlider('s-posts',p.posts_per_week);
+    if(p.avg_likes) setSlider('s-likes',p.avg_likes);
+    if(p.avg_rt) setSlider('s-rt',p.avg_rt);
+    if(p.avg_replies) setSlider('s-rep',p.avg_replies);
+    if(p.avg_bookmarks) setSlider('s-bm',p.avg_bookmarks);
+    if(p.followers) setSlider('s-fol',p.followers);
+    if(p.premium_pct) setSlider('s-prem',p.premium_pct);
+    calc();
+  }
+
+  /* Check if already logged in */
+  fetch('/api/me').then(r=>r.json()).then(data=>{
+    if(data.connected) applyProfile(data.profile);
+  });
+
+  /* Check URL params for callback result */
+  const urlParams=new URLSearchParams(window.location.search);
+  if(urlParams.get('connected')==='1'){
+    const s=document.getElementById('banner-success');
+    s.textContent='Connected! Your real stats have been loaded.';
+    s.style.display='block';
+    window.history.replaceState({},'','/');
+    fetch('/api/me').then(r=>r.json()).then(data=>{
+      if(data.connected) applyProfile(data.profile);
+    });
+  }
+  if(urlParams.get('error')){
+    const e=document.getElementById('banner-error');
+    e.textContent='Connection failed: '+urlParams.get('error')+'. Please try again.';
+    e.style.display='block';
+    window.history.replaceState({},'','/');
+  }
+
+  async function disconnect(){
+    await fetch('/api/logout',{method:'POST'});
+    document.getElementById('profile-card').style.display='none';
+    document.getElementById('connect-section').style.display='flex';
+    document.getElementById('autofill-badge').style.display='none';
+  }
+
+  function loadDemo(){
+    applyProfile({
+      initials:'AO',name:'Adaeze Okafor',handle:'@adaeze_creates',
+      followers:24800,following:1203,posts_per_week:9,
+      avg_likes:340,avg_rt:55,avg_replies:30,avg_bookmarks:45,premium_pct:12
+    });
+  }
+
+  function calc(){
+    const posts=+document.getElementById('s-posts').value;
+    const likes=+document.getElementById('s-likes').value;
+    const rt=+document.getElementById('s-rt').value;
+    const rep=+document.getElementById('s-rep').value;
+    const bm=+document.getElementById('s-bm').value;
+    const fol=+document.getElementById('s-fol').value;
+    const premPct=+document.getElementById('s-prem').value/100;
+    const cpm=cpmMap[document.getElementById('s-region').value]||5;
+
+    document.getElementById('lbl-posts').textContent=posts;
+    document.getElementById('lbl-likes').textContent=likes.toLocaleString();
+    document.getElementById('lbl-rt').textContent=rt.toLocaleString();
+    document.getElementById('lbl-rep').textContent=rep.toLocaleString();
+    document.getElementById('lbl-bm').textContent=bm.toLocaleString();
+    document.getElementById('lbl-fol').textContent=fol.toLocaleString();
+    document.getElementById('lbl-prem').textContent=Math.round(premPct*100)+'%';
+
+    const score=likes*1+rt*20+rep*13.5+bm*10;
+    const reach=0.04+(score/10000)*0.06;
+    const impressions=fol*reach;
+    const monetisable=impressions*premPct;
+    const revPerPost=(monetisable/1000)*cpm*0.525;
+    const weekly=revPerPost*posts;
+
+    document.getElementById('score-display').textContent=fmtInt(score);
+    document.getElementById('score-bar').style.width=Math.min(score/20000*100,100).toFixed(1)+'%';
+    document.getElementById('bd-likes').textContent=fmtInt(likes*1);
+    document.getElementById('bd-rt').textContent=fmtInt(rt*20);
+    document.getElementById('bd-rep').textContent=fmtInt(rep*13.5);
+    document.getElementById('bd-bm').textContent=fmtInt(bm*10);
+    document.getElementById('bd-imp').textContent=fmtInt(monetisable)+' / post';
+    document.getElementById('bd-cpm').textContent='$'+cpm.toFixed(2);
+    document.getElementById('bd-posts').textContent=posts;
+    document.getElementById('rev-per-post').textContent='$'+fmt(revPerPost);
+    document.getElementById('e-weekly').textContent='$'+fmt(weekly);
+    document.getElementById('e-biweekly').textContent='$'+fmt(weekly*2);
+    document.getElementById('e-monthly').textContent='$'+fmt(weekly*4.33);
+    document.getElementById('e-quarterly').textContent='$'+fmt(weekly*13);
+    document.getElementById('e-annual').textContent='$'+fmt(weekly*52);
+
+    const verifiedFol=fol*premPct;
+    const eligible=fol>=500&&verifiedFol>=2000;
+    const banner=document.getElementById('elig-banner');
+    const text=document.getElementById('elig-text');
+    if(eligible){banner.className='elig ok';text.textContent='Eligible — 2,000+ verified followers met';}
+    else if(fol<500){banner.className='elig warn';text.textContent='Need 500+ total followers to qualify';}
+    else{banner.className='elig warn';text.textContent='Need 2,000+ verified followers — currently ~'+fmtInt(verifiedFol);}
+  }
+
+  ['s-posts','s-likes','s-rt','s-rep','s-bm','s-fol','s-prem'].forEach(id=>{
+    document.getElementById(id).addEventListener('input',calc);
+  });
+  document.getElementById('s-region').addEventListener('change',calc);
+  calc();
+</script>
+</body>
+</html>

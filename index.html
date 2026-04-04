@@ -163,8 +163,8 @@ footer a{color:var(--t2);text-decoration:none;}
       <div><div class="ps-l">Followers</div><div class="ps-v" id="p-fol">—</div></div>
       <div><div class="ps-l">Following</div><div class="ps-v" id="p-fing">—</div></div>
       <div><div class="ps-l">Posts/week</div><div class="ps-v" id="p-ppw">—</div></div>
-      <div><div class="ps-l">Avg. likes</div><div class="ps-v" id="p-lk">—</div></div>
-      <div><div class="ps-l">90d impr.</div><div class="ps-v" id="p-imp">—</div></div>
+      <div><div class="ps-l">Posts (14d)</div><div class="ps-v" id="p-posts14">—</div></div>
+      <div><div class="ps-l">14d impressions</div><div class="ps-v" id="p-imp">—</div></div>
     </div>
     <button class="disc" onclick="disconnect()">Disconnect</button>
   </div>
@@ -351,8 +351,8 @@ function applyProfile(p){
   document.getElementById('p-fol').textContent=(p.followers||0).toLocaleString();
   document.getElementById('p-fing').textContent=(p.following||0).toLocaleString();
   document.getElementById('p-ppw').textContent=p.posts_per_week||'—';
-  document.getElementById('p-lk').textContent=(p.avg_likes||0).toLocaleString();
-  document.getElementById('p-imp').textContent=fmtM(p.impressions_90d||0);
+  document.getElementById('p-posts14').textContent=p.biweekly_count||'—';
+  document.getElementById('p-imp').textContent=fmtM(p.impressions_14d||0);
   document.getElementById('connect-section').style.display='none';
   document.getElementById('profile-card').style.display='block';
   document.getElementById('manual-panel').style.display='none';

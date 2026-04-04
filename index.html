@@ -4,495 +4,301 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>XEarnings — Creator Revenue Calculator</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
 <style>
-  :root{--bg:#0a0a0a;--surface:#111;--surface2:#181818;--border:rgba(255,255,255,0.07);--border2:rgba(255,255,255,0.12);--text:#f0f0f0;--muted:#666;--muted2:#999;--accent:#e7ff52;--accent-dim:rgba(231,255,82,0.12);--accent-dim2:rgba(231,255,82,0.05);--green:#4ade80;--red:#f87171;--amber:#fbbf24;--radius:12px;--radius-sm:8px;}
-  *{box-sizing:border-box;margin:0;padding:0;}
-  body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;font-size:15px;line-height:1.6;min-height:100vh;}
-  body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");pointer-events:none;z-index:0;}
-  body::after{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(255,255,255,0.02) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.02) 1px,transparent 1px);background-size:60px 60px;pointer-events:none;z-index:0;}
-  .page{position:relative;z-index:1;max-width:1100px;margin:0 auto;padding:0 24px 80px;}
-  nav{display:flex;align-items:center;justify-content:space-between;padding:28px 0 48px;}
-  .logo{display:flex;align-items:center;gap:10px;font-family:'Syne',sans-serif;font-weight:800;font-size:20px;letter-spacing:-0.02em;color:var(--text);text-decoration:none;}
-  .logo-x{width:32px;height:32px;background:var(--accent);border-radius:8px;display:flex;align-items:center;justify-content:center;}
-  .logo-x svg{width:16px;height:16px;fill:#0a0a0a;}
-  .nav-right{display:flex;align-items:center;gap:12px;}
-  .nav-badge{font-family:'DM Mono',monospace;font-size:11px;color:var(--accent);background:var(--accent-dim);border:1px solid rgba(231,255,82,0.2);padding:4px 10px;border-radius:20px;}
-  .nav-date{font-family:'DM Mono',monospace;font-size:11px;color:var(--muted);padding:4px 10px;}
-  .hero{margin-bottom:48px;}
-  .hero-eyebrow{font-family:'DM Mono',monospace;font-size:11px;color:var(--muted2);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:16px;display:flex;align-items:center;gap:8px;}
-  .hero-eyebrow::before{content:'';display:inline-block;width:20px;height:1px;background:var(--muted);}
-  .hero h1{font-family:'Syne',sans-serif;font-size:clamp(36px,6vw,68px);font-weight:800;line-height:1.0;letter-spacing:-0.03em;margin-bottom:18px;}
-  .hero h1 em{font-style:normal;color:var(--accent);}
-  .hero-sub{font-size:15px;color:var(--muted2);max-width:500px;line-height:1.7;}
-  .connect-card{background:var(--surface);border:1px solid var(--border2);border-radius:var(--radius);padding:28px 32px;margin-bottom:24px;display:flex;align-items:flex-start;gap:22px;}
-  .connect-icon{width:48px;height:48px;flex-shrink:0;background:var(--accent-dim);border:1px solid rgba(231,255,82,0.2);border-radius:12px;display:flex;align-items:center;justify-content:center;}
-  .connect-icon svg{width:20px;height:20px;fill:var(--accent);}
-  .connect-content{flex:1;}
-  .connect-content h3{font-family:'Syne',sans-serif;font-weight:700;font-size:17px;margin-bottom:6px;}
-  .connect-content p{font-size:13px;color:var(--muted2);margin-bottom:18px;line-height:1.6;}
-  .connect-actions{display:flex;align-items:center;gap:12px;flex-wrap:wrap;}
-  .btn-primary{display:inline-flex;align-items:center;gap:8px;background:var(--accent);color:#0a0a0a;border:none;border-radius:var(--radius-sm);padding:10px 20px;font-family:'Syne',sans-serif;font-weight:700;font-size:13px;cursor:pointer;transition:opacity .15s,transform .1s;text-decoration:none;}
-  .btn-primary:hover{opacity:.88;}
-  .btn-primary:active{transform:scale(.98);}
-  .btn-primary svg{width:14px;height:14px;fill:#0a0a0a;}
-  .oauth-steps{display:flex;gap:0;margin-top:20px;padding-top:20px;border-top:1px solid var(--border);}
-  .oauth-step{flex:1;padding-right:16px;}
-  .oauth-step:not(:last-child){border-right:1px solid var(--border);margin-right:16px;}
-  .step-num{font-family:'DM Mono',monospace;font-size:10px;color:var(--accent);margin-bottom:4px;}
-  .step-text{font-size:12px;color:var(--muted);line-height:1.5;}
-  .banner{padding:12px 18px;border-radius:var(--radius-sm);font-size:13px;margin-bottom:20px;display:none;}
-  .banner.error{background:rgba(248,113,113,0.08);border:1px solid rgba(248,113,113,0.2);color:var(--red);}
-  .banner.success{background:rgba(74,222,128,0.08);border:1px solid rgba(74,222,128,0.2);color:var(--green);}
-  .profile-card{background:var(--surface);border:1px solid rgba(231,255,82,0.2);border-radius:var(--radius);padding:24px 28px;margin-bottom:24px;display:none;}
-  .profile-top{display:flex;align-items:center;gap:14px;margin-bottom:20px;}
-  .profile-avatar{width:52px;height:52px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:800;font-size:18px;color:#0a0a0a;flex-shrink:0;overflow:hidden;}
-  .profile-avatar img{width:100%;height:100%;object-fit:cover;}
-  .profile-name{font-family:'Syne',sans-serif;font-weight:700;font-size:16px;}
-  .profile-handle{font-size:13px;color:var(--muted2);}
-  .profile-verified{margin-left:auto;display:flex;align-items:center;gap:6px;font-family:'DM Mono',monospace;font-size:11px;color:var(--accent);background:var(--accent-dim);padding:4px 10px;border-radius:20px;}
-  .profile-stats{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;}
-  .pstat-label{font-size:11px;color:var(--muted);margin-bottom:2px;}
-  .pstat-val{font-family:'Syne',sans-serif;font-weight:700;font-size:15px;}
-  .disconnect-link{font-size:12px;color:var(--muted);cursor:pointer;text-decoration:underline;text-underline-offset:3px;background:none;border:none;padding:0;margin-top:14px;display:inline-block;}
-  .disconnect-link:hover{color:var(--red);}
-  .elig{display:flex;align-items:center;gap:10px;padding:12px 16px;border-radius:var(--radius-sm);font-size:13px;margin-bottom:20px;}
-  .elig.ok{background:rgba(74,222,128,0.08);border:1px solid rgba(74,222,128,0.2);color:var(--green);}
-  .elig.warn{background:rgba(251,191,36,0.08);border:1px solid rgba(251,191,36,0.2);color:var(--amber);}
-  .elig-dot{width:6px;height:6px;border-radius:50%;background:currentColor;flex-shrink:0;}
-  .grid5{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;margin-bottom:28px;}
-  .earn-card{background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:14px;}
-  .earn-card.highlight{border-color:rgba(231,255,82,0.25);background:var(--accent-dim2);}
-  .earn-label{font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;}
-  .earn-val{font-family:'Syne',sans-serif;font-weight:800;font-size:18px;color:var(--text);}
-  .earn-card.highlight .earn-val{color:var(--accent);}
-  .main-grid{display:grid;grid-template-columns:1fr 360px;gap:24px;align-items:start;}
-  .panel{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-bottom:16px;}
-  .panel-header{padding:16px 24px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
-  .panel-title{font-family:'Syne',sans-serif;font-weight:700;font-size:12px;letter-spacing:.04em;text-transform:uppercase;color:var(--muted2);}
-  .panel-body{padding:22px 24px;}
-  .locked-note{font-size:11px;color:var(--accent);background:var(--accent-dim);padding:3px 8px;border-radius:20px;}
-  .stat-row{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border);font-size:13px;}
-  .stat-row:last-child{border-bottom:none;}
-  .stat-label{color:var(--muted2);}
-  .stat-val{font-family:'DM Mono',monospace;font-weight:500;color:var(--text);}
-  .slider-group{margin-bottom:20px;}
-  .slider-label{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px;}
-  .slider-name{font-size:13px;color:var(--muted2);}
-  .slider-val{font-family:'DM Mono',monospace;font-size:13px;font-weight:500;color:var(--text);}
-  input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:2px;background:var(--border2);border-radius:1px;outline:none;cursor:pointer;}
-  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;border-radius:50%;background:var(--accent);cursor:pointer;transition:transform .1s;}
-  input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.2);}
-  input[type=range]:disabled{opacity:0.4;cursor:not-allowed;}
-  input[type=range]:disabled::-webkit-slider-thumb{background:var(--muted);cursor:not-allowed;}
-  select{width:100%;background:var(--surface2);border:1px solid var(--border2);border-radius:var(--radius-sm);color:var(--text);padding:10px 12px;font-family:'DM Sans',sans-serif;font-size:13px;cursor:pointer;outline:none;appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23666' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;}
-  .brow{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid var(--border);font-size:13px;}
-  .brow:last-child{border-bottom:none;}
-  .brow-label{color:var(--muted2);}
-  .brow-val{font-family:'DM Mono',monospace;font-size:12px;color:var(--text);}
-  .score-bar-wrap{margin:4px 0 18px;background:var(--border);border-radius:2px;height:3px;overflow:hidden;}
-  .score-bar{height:100%;background:var(--accent);border-radius:2px;transition:width .3s ease;}
-  .formula{background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:16px;font-family:'DM Mono',monospace;font-size:11px;color:var(--muted);line-height:2;margin-top:4px;}
-  .formula .key{color:var(--accent);}
-  .formula .dim{color:var(--muted);}
-  /* PAYOUT HISTORY */
-  .payout-section{margin-top:28px;}
-  .payout-header{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:16px;}
-  .payout-title{font-family:'Syne',sans-serif;font-weight:700;font-size:15px;}
-  .payout-sub{font-size:12px;color:var(--muted);}
-  .payout-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;margin-bottom:20px;}
-  .payout-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px 10px;text-align:center;}
-  .payout-card.current{border-color:rgba(231,255,82,0.3);background:var(--accent-dim2);}
-  .payout-card.projected{border-color:rgba(74,222,128,0.2);background:rgba(74,222,128,0.04);}
-  .payout-month{font-size:10px;color:var(--muted);margin-bottom:4px;font-family:'DM Mono',monospace;}
-  .payout-amount{font-family:'Syne',sans-serif;font-weight:800;font-size:14px;color:var(--text);}
-  .payout-card.current .payout-amount{color:var(--accent);}
-  .payout-card.projected .payout-amount{color:var(--green);}
-  .payout-status{font-size:9px;margin-top:4px;font-family:'DM Mono',monospace;}
-  .payout-card.current .payout-status{color:var(--accent);}
-  .payout-card.projected .payout-status{color:var(--green);}
-  .paid-tag{color:var(--muted);}
-  footer{margin-top:60px;padding-top:24px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;font-size:12px;color:var(--muted);flex-wrap:wrap;gap:8px;}
-  footer a{color:var(--muted2);text-decoration:none;}
-  footer a:hover{color:var(--text);}
-  @keyframes fadeUp{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
-  .hero,.connect-card,.profile-card,.main-grid{animation:fadeUp .45s ease both;}
-  .main-grid{animation-delay:.08s;}
-  @media(max-width:800px){
-    .main-grid{grid-template-columns:1fr;}
-    .profile-stats{grid-template-columns:repeat(3,1fr);}
-    .connect-card{flex-direction:column;}
-    .oauth-steps{flex-direction:column;gap:12px;}
-    .oauth-step{border-right:none!important;margin-right:0!important;}
-    .grid5{grid-template-columns:repeat(3,1fr);}
-    .payout-grid{grid-template-columns:repeat(3,1fr);}
-  }
+:root{--bg:#0a0a0a;--s1:#111;--s2:#161616;--s3:#1c1c1c;--b1:rgba(255,255,255,0.06);--b2:rgba(255,255,255,0.11);--t1:#f0f0f0;--t2:#aaa;--t3:#666;--acc:#e7ff52;--acc2:rgba(231,255,82,0.1);--acc3:rgba(231,255,82,0.05);--grn:#4ade80;--grn2:rgba(74,222,128,0.08);--red:#f87171;--amb:#fbbf24;--r:10px;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--t1);font-family:'DM Sans',sans-serif;font-size:14px;line-height:1.6;min-height:100vh;}
+body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 59px,rgba(255,255,255,0.018) 59px,rgba(255,255,255,0.018) 60px),repeating-linear-gradient(90deg,transparent,transparent 59px,rgba(255,255,255,0.018) 59px,rgba(255,255,255,0.018) 60px);pointer-events:none;z-index:0;}
+.pg{position:relative;z-index:1;max-width:1080px;margin:0 auto;padding:0 20px 80px;}
+
+/* NAV */
+nav{display:flex;align-items:center;justify-content:space-between;padding:24px 0 40px;}
+.logo{display:flex;align-items:center;gap:10px;font-family:'Syne',sans-serif;font-weight:800;font-size:19px;letter-spacing:-.02em;color:var(--t1);text-decoration:none;}
+.lx{width:30px;height:30px;background:var(--acc);border-radius:7px;display:flex;align-items:center;justify-content:center;}
+.lx svg{width:15px;height:15px;fill:#000;}
+.nav-r{display:flex;align-items:center;gap:10px;}
+.pill{font-family:'DM Mono',monospace;font-size:10px;padding:3px 9px;border-radius:20px;}
+.pill.acc{color:var(--acc);background:var(--acc2);border:1px solid rgba(231,255,82,0.2);}
+.pill.muted{color:var(--t3);}
+
+/* HERO */
+.hero{margin-bottom:40px;}
+.eyebrow{font-family:'DM Mono',monospace;font-size:10px;color:var(--t3);letter-spacing:.1em;text-transform:uppercase;margin-bottom:14px;display:flex;align-items:center;gap:8px;}
+.eyebrow::before{content:'';width:18px;height:1px;background:var(--t3);}
+h1{font-family:'Syne',sans-serif;font-size:clamp(32px,5.5vw,62px);font-weight:800;line-height:1.0;letter-spacing:-.03em;margin-bottom:14px;}
+h1 em{font-style:normal;color:var(--acc);}
+.sub{font-size:14px;color:var(--t2);max-width:480px;line-height:1.7;}
+
+/* BANNERS */
+.bann{padding:11px 16px;border-radius:var(--r);font-size:13px;margin-bottom:18px;display:none;}
+.bann.err{background:rgba(248,113,113,0.07);border:1px solid rgba(248,113,113,0.18);color:var(--red);}
+.bann.ok{background:var(--grn2);border:1px solid rgba(74,222,128,0.18);color:var(--grn);}
+
+/* CONNECT */
+.connect{background:var(--s1);border:1px solid var(--b2);border-radius:var(--r);padding:24px 28px;margin-bottom:22px;}
+.connect h3{font-family:'Syne',sans-serif;font-weight:700;font-size:16px;margin-bottom:6px;}
+.connect p{font-size:13px;color:var(--t2);margin-bottom:16px;line-height:1.6;}
+.btn{display:inline-flex;align-items:center;gap:7px;background:var(--acc);color:#000;border:none;border-radius:8px;padding:9px 18px;font-family:'Syne',sans-serif;font-weight:700;font-size:13px;cursor:pointer;text-decoration:none;transition:opacity .15s;}
+.btn:hover{opacity:.85;}
+.btn svg{width:13px;height:13px;fill:#000;}
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:0;margin-top:18px;padding-top:18px;border-top:1px solid var(--b1);}
+.step{padding-right:16px;}
+.step:not(:last-child){border-right:1px solid var(--b1);margin-right:16px;}
+.sn{font-family:'DM Mono',monospace;font-size:9px;color:var(--acc);margin-bottom:3px;}
+.st{font-size:11px;color:var(--t3);line-height:1.5;}
+
+/* PROFILE */
+.profile{background:var(--s1);border:1px solid rgba(231,255,82,0.18);border-radius:var(--r);padding:20px 24px;margin-bottom:22px;display:none;}
+.ptop{display:flex;align-items:center;gap:12px;margin-bottom:18px;}
+.pav{width:48px;height:48px;border-radius:50%;background:var(--acc);display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:800;font-size:17px;color:#000;flex-shrink:0;overflow:hidden;}
+.pav img{width:100%;height:100%;object-fit:cover;}
+.pname{font-family:'Syne',sans-serif;font-weight:700;font-size:15px;}
+.phandle{font-size:12px;color:var(--t2);}
+.conn-badge{margin-left:auto;font-family:'DM Mono',monospace;font-size:10px;color:var(--grn);background:var(--grn2);border:1px solid rgba(74,222,128,0.2);padding:3px 9px;border-radius:20px;}
+.pstats{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;}
+.ps-label{font-size:10px;color:var(--t3);margin-bottom:2px;}
+.ps-val{font-family:'Syne',sans-serif;font-weight:700;font-size:14px;}
+.disc{font-size:11px;color:var(--t3);cursor:pointer;text-decoration:underline;text-underline-offset:3px;background:none;border:none;padding:0;margin-top:12px;display:inline-block;}
+.disc:hover{color:var(--red);}
+
+/* ELIG */
+.elig{display:flex;align-items:center;gap:8px;padding:10px 14px;border-radius:var(--r);font-size:12px;margin-bottom:18px;}
+.elig.ok{background:var(--grn2);border:1px solid rgba(74,222,128,0.18);color:var(--grn);}
+.elig.warn{background:rgba(251,191,36,0.07);border:1px solid rgba(251,191,36,0.18);color:var(--amb);}
+.elig-dot{width:5px;height:5px;border-radius:50%;background:currentColor;flex-shrink:0;}
+
+/* EARN CARDS */
+.egrid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;margin-bottom:24px;}
+.ec{background:var(--s2);border:1px solid var(--b1);border-radius:var(--r);padding:13px;}
+.ec.hi{border-color:rgba(231,255,82,0.22);background:var(--acc3);}
+.ec-label{font-family:'DM Mono',monospace;font-size:9px;color:var(--t3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:5px;}
+.ec-val{font-family:'Syne',sans-serif;font-weight:800;font-size:17px;}
+.ec.hi .ec-val{color:var(--acc);}
+
+/* MAIN GRID */
+.mgrid{display:grid;grid-template-columns:1fr 340px;gap:20px;align-items:start;}
+.panel{background:var(--s1);border:1px solid var(--b1);border-radius:var(--r);overflow:hidden;margin-bottom:16px;}
+.ph{padding:14px 20px;border-bottom:1px solid var(--b1);display:flex;align-items:center;justify-content:space-between;}
+.pt{font-family:'Syne',sans-serif;font-weight:700;font-size:11px;letter-spacing:.04em;text-transform:uppercase;color:var(--t2);}
+.pb{padding:18px 20px;}
+.live-tag{font-family:'DM Mono',monospace;font-size:9px;color:var(--acc);background:var(--acc2);padding:2px 7px;border-radius:20px;}
+
+/* BIWEEKLY POSTS */
+.bw-header{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:12px;}
+.bw-title{font-family:'Syne',sans-serif;font-weight:700;font-size:13px;}
+.bw-total{font-family:'DM Mono',monospace;font-size:12px;color:var(--acc);}
+.post-card{background:var(--s2);border:1px solid var(--b1);border-radius:8px;padding:12px 14px;margin-bottom:8px;}
+.post-card:last-child{margin-bottom:0;}
+.post-top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:8px;}
+.post-text{font-size:12px;color:var(--t2);line-height:1.5;flex:1;}
+.post-payout{font-family:'Syne',sans-serif;font-weight:800;font-size:14px;color:var(--acc);flex-shrink:0;}
+.post-date{font-family:'DM Mono',monospace;font-size:9px;color:var(--t3);margin-bottom:4px;}
+.post-metrics{display:flex;gap:12px;flex-wrap:wrap;}
+.pm{display:flex;align-items:center;gap:4px;font-family:'DM Mono',monospace;font-size:10px;color:var(--t3);}
+.pm-icon{font-size:10px;}
+.pm-val{color:var(--t2);}
+.pm.hi .pm-val{color:var(--acc);}
+.score-chip{font-family:'DM Mono',monospace;font-size:9px;background:var(--acc2);color:var(--acc);padding:2px 6px;border-radius:4px;margin-left:auto;}
+.post-bar{height:2px;background:var(--b2);border-radius:1px;margin-top:8px;overflow:hidden;}
+.post-bar-fill{height:100%;background:var(--acc);border-radius:1px;}
+.empty-posts{text-align:center;padding:28px 20px;color:var(--t3);font-size:13px;}
+
+/* SLIDERS */
+.sg{margin-bottom:18px;}
+.sl{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:7px;}
+.sn2{font-size:12px;color:var(--t2);}
+.sv{font-family:'DM Mono',monospace;font-size:12px;color:var(--t1);}
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:2px;background:var(--b2);border-radius:1px;outline:none;cursor:pointer;}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:13px;height:13px;border-radius:50%;background:var(--acc);cursor:pointer;}
+select{width:100%;background:var(--s2);border:1px solid var(--b2);border-radius:8px;color:var(--t1);padding:9px 11px;font-family:'DM Sans',sans-serif;font-size:12px;cursor:pointer;outline:none;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%23666' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;}
+
+/* BREAKDOWN */
+.br{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--b1);font-size:12px;}
+.br:last-child{border-bottom:none;}
+.brl{color:var(--t2);}
+.brv{font-family:'DM Mono',monospace;font-size:11px;color:var(--t1);}
+.sbar-w{margin:3px 0 16px;background:var(--b1);border-radius:2px;height:2px;overflow:hidden;}
+.sbar{height:100%;background:var(--acc);border-radius:2px;transition:width .3s;}
+.formula{background:var(--s2);border:1px solid var(--b1);border-radius:8px;padding:14px;font-family:'DM Mono',monospace;font-size:10px;color:var(--t3);line-height:2;margin-top:4px;}
+.formula .k{color:var(--acc);}
+
+/* PAYOUT HISTORY */
+.ph-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:12px;}
+.hc{background:var(--s2);border:1px solid var(--b1);border-radius:8px;padding:10px;text-align:center;}
+.hc.cur{border-color:rgba(231,255,82,0.25);background:var(--acc3);}
+.hc.proj{border-color:rgba(74,222,128,0.2);background:var(--grn2);}
+.hc-mo{font-family:'DM Mono',monospace;font-size:9px;color:var(--t3);margin-bottom:3px;}
+.hc-amt{font-family:'Syne',sans-serif;font-weight:800;font-size:13px;}
+.hc.cur .hc-amt{color:var(--acc);}
+.hc.proj .hc-amt{color:var(--grn);}
+.hc-st{font-size:9px;font-family:'DM Mono',monospace;color:var(--t3);margin-top:2px;}
+.hc.cur .hc-st{color:var(--acc);}
+.hc.proj .hc-st{color:var(--grn);}
+
+/* STAT ROWS (locked) */
+.sr{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid var(--b1);font-size:12px;}
+.sr:last-child{border-bottom:none;}
+.sr-l{color:var(--t2);}
+.sr-v{font-family:'DM Mono',monospace;color:var(--t1);}
+
+footer{margin-top:48px;padding-top:20px;border-top:1px solid var(--b1);display:flex;justify-content:space-between;font-size:11px;color:var(--t3);flex-wrap:wrap;gap:6px;}
+footer a{color:var(--t2);text-decoration:none;}
+@keyframes fu{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+.hero,.connect,.profile,.mgrid{animation:fu .4s ease both;}
+.mgrid{animation-delay:.06s;}
+@media(max-width:780px){
+  .mgrid{grid-template-columns:1fr;}
+  .pstats{grid-template-columns:repeat(3,1fr);}
+  .egrid{grid-template-columns:repeat(3,1fr);}
+  .ph-grid{grid-template-columns:repeat(3,1fr);}
+  .steps{grid-template-columns:1fr;}
+  .step{border-right:none!important;margin-right:0!important;padding:0 0 10px;}
+}
 </style>
 </head>
 <body>
-<div class="page">
+<div class="pg">
   <nav>
     <a href="/" class="logo">
-      <span class="logo-x"><svg viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.748l7.73-8.835L1.254 2.25H8.08l4.253 5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg></span>
+      <span class="lx"><svg viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.748l7.73-8.835L1.254 2.25H8.08l4.253 5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg></span>
       XEarnings
     </a>
-    <div class="nav-right">
-      <span class="nav-date" id="nav-date"></span>
-      <span class="nav-badge" id="algo-badge">Jan 2026 Algorithm</span>
+    <div class="nav-r">
+      <span class="pill muted" id="nav-date"></span>
+      <span class="pill acc">Jan 2026 Algorithm</span>
     </div>
   </nav>
 
-  <section class="hero">
-    <p class="hero-eyebrow">Creator revenue calculator</p>
+  <div class="hero">
+    <p class="eyebrow">Creator revenue calculator</p>
     <h1>How much is your<br>content <em>actually</em> worth?</h1>
-    <p class="hero-sub">Built on X's open-sourced Grok algorithm. Connect your account — your real stats, real engagement, real projections.</p>
-  </section>
+    <p class="sub">Real post-by-post earnings from your last 14 days. Built on X's open-sourced Grok algorithm — every like, retweet, reply, bookmark and verified impression counted.</p>
+  </div>
 
-  <div id="banner-error" class="banner error"></div>
-  <div id="banner-success" class="banner success"></div>
+  <div id="b-err" class="bann err"></div>
+  <div id="b-ok" class="bann ok"></div>
 
-  <div class="connect-card" id="connect-section">
-    <div class="connect-icon"><svg viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.748l7.73-8.835L1.254 2.25H8.08l4.253 5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg></div>
-    <div class="connect-content">
-      <h3>Connect your X account</h3>
-      <p>Sign in with OAuth 2.0 — your real follower count, actual engagement averages from your last 100 posts, and post frequency pull in automatically. Everything is calculated from your real data.</p>
-      <div class="connect-actions">
-        <a href="/auth/x" class="btn-primary">
-          <svg viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.748l7.73-8.835L1.254 2.25H8.08l4.253 5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
-          Sign in with X
-        </a>
-      </div>
-      <div class="oauth-steps">
-        <div class="oauth-step"><div class="step-num">01 — Authorise</div><div class="step-text">Approve on x.com — we never see your password</div></div>
-        <div class="oauth-step"><div class="step-num">02 — Pull data</div><div class="step-text">Your last 100 posts are analysed for real averages</div></div>
-        <div class="oauth-step"><div class="step-num">03 — See earnings</div><div class="step-text">Real projections locked to your actual performance</div></div>
-      </div>
+  <div class="connect" id="connect-section">
+    <h3>Connect your X account</h3>
+    <p>Sign in with OAuth 2.0 — we pull your last 100 posts to calculate real averages, and your last 14 days post-by-post to show exactly what each post earned. Likes, retweets, replies, bookmarks, impression count, and verified home timeline views all factored in.</p>
+    <a href="/auth/x" class="btn">
+      <svg viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.748l7.73-8.835L1.254 2.25H8.08l4.253 5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+      Sign in with X
+    </a>
+    <div class="steps">
+      <div class="step"><div class="sn">01 — Authorise</div><div class="st">Approve on x.com — we never see your password</div></div>
+      <div class="step"><div class="sn">02 — Pull real data</div><div class="st">Last 100 posts averaged + last 14 days per-post breakdown</div></div>
+      <div class="step"><div class="sn">03 — See earnings</div><div class="st">Every post shows its payout. Real impressions, real numbers.</div></div>
     </div>
   </div>
 
-  <div class="profile-card" id="profile-card">
-    <div class="profile-top">
-      <div class="profile-avatar" id="p-avatar">—</div>
+  <div class="profile" id="profile-card">
+    <div class="ptop">
+      <div class="pav" id="p-av">—</div>
       <div>
-        <div class="profile-name" id="p-name">—</div>
-        <div class="profile-handle" id="p-handle">—</div>
+        <div class="pname" id="p-name">—</div>
+        <div class="phandle" id="p-handle">—</div>
       </div>
-      <div class="profile-verified">
-        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-        Live data
-      </div>
+      <div class="conn-badge">Live data</div>
     </div>
-    <div class="profile-stats">
-      <div><div class="pstat-label">Followers</div><div class="pstat-val" id="p-followers">—</div></div>
-      <div><div class="pstat-label">Following</div><div class="pstat-val" id="p-following">—</div></div>
-      <div><div class="pstat-label">Posts / week</div><div class="pstat-val" id="p-posts">—</div></div>
-      <div><div class="pstat-label">Avg. likes</div><div class="pstat-val" id="p-likes">—</div></div>
-      <div><div class="pstat-label">Total posts</div><div class="pstat-val" id="p-total">—</div></div>
+    <div class="pstats">
+      <div><div class="ps-label">Followers</div><div class="ps-val" id="p-fol">—</div></div>
+      <div><div class="ps-label">Following</div><div class="ps-val" id="p-fing">—</div></div>
+      <div><div class="ps-label">Posts / week</div><div class="ps-val" id="p-ppw">—</div></div>
+      <div><div class="ps-label">Avg. likes</div><div class="ps-val" id="p-lk">—</div></div>
+      <div><div class="ps-label">Total posts</div><div class="ps-val" id="p-tot">—</div></div>
     </div>
-    <button class="disconnect-link" onclick="disconnect()">Disconnect account</button>
+    <button class="disc" onclick="disconnect()">Disconnect account</button>
   </div>
 
-  <div class="elig ok" id="elig-banner">
+  <div class="elig ok" id="elig">
     <span class="elig-dot"></span>
-    <span id="elig-text">Eligible for Creator Revenue Sharing</span>
+    <span id="elig-t">Eligible for Creator Revenue Sharing</span>
   </div>
 
-  <div class="grid5">
-    <div class="earn-card"><div class="earn-label">Weekly</div><div class="earn-val" id="e-weekly">$0.00</div></div>
-    <div class="earn-card highlight"><div class="earn-label">Biweekly</div><div class="earn-val" id="e-biweekly">$0.00</div></div>
-    <div class="earn-card"><div class="earn-label">Monthly</div><div class="earn-val" id="e-monthly">$0.00</div></div>
-    <div class="earn-card"><div class="earn-label">Quarterly</div><div class="earn-val" id="e-quarterly">$0.00</div></div>
-    <div class="earn-card"><div class="earn-label">Annual</div><div class="earn-val" id="e-annual">$0.00</div></div>
+  <div class="egrid">
+    <div class="ec"><div class="ec-label">Weekly</div><div class="ec-val" id="e-wk">$0.00</div></div>
+    <div class="ec hi"><div class="ec-label">Biweekly</div><div class="ec-val" id="e-bw">$0.00</div></div>
+    <div class="ec"><div class="ec-label">Monthly</div><div class="ec-val" id="e-mo">$0.00</div></div>
+    <div class="ec"><div class="ec-label">Quarterly</div><div class="ec-val" id="e-qt">$0.00</div></div>
+    <div class="ec"><div class="ec-label">Annual</div><div class="ec-val" id="e-yr">$0.00</div></div>
   </div>
 
-  <div class="main-grid">
+  <div class="mgrid">
     <div>
-      <div class="panel">
-        <div class="panel-header">
-          <span class="panel-title">Post performance</span>
-          <span class="locked-note" id="data-source-badge">Manual</span>
+      <!-- BIWEEKLY POSTS -->
+      <div class="panel" id="bw-panel" style="display:none;">
+        <div class="ph">
+          <span class="pt">Last 14 days — post breakdown</span>
+          <span class="live-tag" id="bw-count-badge">0 posts</span>
         </div>
-        <div class="panel-body" id="stats-panel">
-          <!-- filled by JS — locked real stats or sliders -->
+        <div class="pb">
+          <div class="bw-header">
+            <span class="bw-title">Your posts &amp; what each one earned</span>
+            <span class="bw-total" id="bw-total-label">Total: $0.00</span>
+          </div>
+          <div id="posts-list"></div>
+        </div>
+      </div>
+
+      <!-- MANUAL SLIDERS (shown when not connected) -->
+      <div class="panel" id="manual-panel">
+        <div class="ph">
+          <span class="pt">Post performance</span>
+          <span class="live-tag" id="src-badge" style="color:var(--t3);background:transparent;border:1px solid var(--b2);">Manual</span>
+        </div>
+        <div class="pb">
+          <div class="sg"><div class="sl"><span class="sn2">Posts per week</span><span class="sv" id="lbl-p">7</span></div><input type="range" id="s-p" min="1" max="21" value="7" step="1"></div>
+          <div class="sg"><div class="sl"><span class="sn2">Avg. likes per post</span><span class="sv" id="lbl-lk">200</span></div><input type="range" id="s-lk" min="0" max="5000" value="200" step="10"></div>
+          <div class="sg"><div class="sl"><span class="sn2">Avg. retweets</span><span class="sv" id="lbl-rt">40</span></div><input type="range" id="s-rt" min="0" max="1000" value="40" step="5"></div>
+          <div class="sg"><div class="sl"><span class="sn2">Avg. replies</span><span class="sv" id="lbl-rp">20</span></div><input type="range" id="s-rp" min="0" max="500" value="20" step="5"></div>
+          <div class="sg"><div class="sl"><span class="sn2">Avg. bookmarks</span><span class="sv" id="lbl-bm">30</span></div><input type="range" id="s-bm" min="0" max="500" value="30" step="5"></div>
+          <div class="sg"><div class="sl"><span class="sn2">Followers</span><span class="sv" id="lbl-fl">10,000</span></div><input type="range" id="s-fl" min="500" max="500000" value="10000" step="500"></div>
+          <div class="sg" style="margin-bottom:0;"><div class="sl"><span class="sn2">Premium followers %</span><span class="sv" id="lbl-pm">10%</span></div><input type="range" id="s-pm" min="1" max="40" value="10" step="1"></div>
         </div>
       </div>
 
       <!-- PAYOUT HISTORY -->
-      <div class="panel" id="payout-panel" style="display:none;">
-        <div class="panel-header">
-          <span class="panel-title">Payout history + projection</span>
-          <span class="locked-note">Based on your real data</span>
+      <div class="panel" id="hist-panel" style="display:none;">
+        <div class="ph">
+          <span class="pt">Payout history + projection</span>
+          <span class="live-tag">Based on your real data</span>
         </div>
-        <div class="panel-body">
-          <div class="payout-grid" id="payout-grid"></div>
-          <p style="font-size:11px;color:var(--muted);line-height:1.6;">Past payouts are estimated from your engagement history. The current month projection is based on your actual post performance to date. X pays out monthly via Stripe.</p>
+        <div class="pb">
+          <div class="ph-grid" id="hist-grid"></div>
+          <p style="font-size:10px;color:var(--t3);line-height:1.6;">Estimated from your engagement history. X pays monthly via Stripe once you hit the $10 minimum.</p>
         </div>
       </div>
     </div>
 
     <div>
       <div class="panel">
-        <div class="panel-header">
-          <span class="panel-title">Algorithm score</span>
-          <span style="font-family:'DM Mono',monospace;font-size:13px;color:var(--accent);" id="score-display">0</span>
-        </div>
-        <div class="panel-body" style="padding-top:16px;padding-bottom:16px;">
-          <div class="score-bar-wrap"><div class="score-bar" id="score-bar" style="width:0%"></div></div>
-          <div class="brow"><span class="brow-label">Likes × 1</span><span class="brow-val" id="bd-likes">—</span></div>
-          <div class="brow"><span class="brow-label">Retweets × 20</span><span class="brow-val" id="bd-rt">—</span></div>
-          <div class="brow"><span class="brow-label">Replies × 13.5</span><span class="brow-val" id="bd-rep">—</span></div>
-          <div class="brow" style="border-bottom:none;"><span class="brow-label">Bookmarks × 10</span><span class="brow-val" id="bd-bm">—</span></div>
+        <div class="ph"><span class="pt">Algorithm score</span><span style="font-family:'DM Mono',monospace;font-size:12px;color:var(--acc);" id="score-n">0</span></div>
+        <div class="pb" style="padding-top:14px;padding-bottom:14px;">
+          <div class="sbar-w"><div class="sbar" id="score-b" style="width:0%"></div></div>
+          <div class="br"><span class="brl">Likes × 1</span><span class="brv" id="bd-lk">—</span></div>
+          <div class="br"><span class="brl">Retweets × 20</span><span class="brv" id="bd-rt">—</span></div>
+          <div class="br"><span class="brl">Replies × 13.5</span><span class="brv" id="bd-rp">—</span></div>
+          <div class="br" style="border:none;"><span class="brl">Bookmarks × 10</span><span class="brv" id="bd-bm">—</span></div>
         </div>
       </div>
 
       <div class="panel">
-        <div class="panel-header">
-          <span class="panel-title">Revenue / post</span>
-          <span style="font-family:'DM Mono',monospace;font-size:13px;color:var(--green);" id="rev-per-post">—</span>
-        </div>
-        <div class="panel-body" style="padding-top:16px;padding-bottom:16px;">
-          <div class="brow"><span class="brow-label">Monetisable impressions</span><span class="brow-val" id="bd-imp">—</span></div>
-          <div class="brow"><span class="brow-label">CPM (region)</span><span class="brow-val" id="bd-cpm">—</span></div>
-          <div class="brow"><span class="brow-label">Creator share</span><span class="brow-val">52.5%</span></div>
-          <div class="brow" style="border-bottom:none;"><span class="brow-label">Posts this week</span><span class="brow-val" id="bd-posts">—</span></div>
+        <div class="ph"><span class="pt">Revenue / post</span><span style="font-family:'DM Mono',monospace;font-size:12px;color:var(--grn);" id="rev-pp">—</span></div>
+        <div class="pb" style="padding-top:14px;padding-bottom:14px;">
+          <div class="br"><span class="brl">Monetisable impressions</span><span class="brv" id="bd-imp">—</span></div>
+          <div class="br"><span class="brl">CPM</span><span class="brv" id="bd-cpm">—</span></div>
+          <div class="br"><span class="brl">Creator share</span><span class="brv">52.5%</span></div>
+          <div class="br" style="border:none;"><span class="brl">Posts this period</span><span class="brv" id="bd-pp">—</span></div>
         </div>
       </div>
 
       <div class="panel" style="margin-bottom:0;">
-        <div class="panel-header"><span class="panel-title">Audience region</span></div>
-        <div class="panel-body" style="padding-top:16px;padding-bottom:16px;">
-          <select id="s-region">
-            <option value="12">United States / Canada — $12 CPM</option>
-            <option value="9">UK / Western Europe — $9 CPM</option>
+        <div class="ph"><span class="pt">Audience region</span></div>
+        <div class="pb" style="padding-top:14px;padding-bottom:14px;">
+          <select id="s-reg">
+            <option value="12">US / Canada — $12 CPM</option>
+            <option value="9">UK / W. Europe — $9 CPM</option>
             <option value="5" selected>Global mix — $5 CPM</option>
-            <option value="2">West Africa / South Asia — $2 CPM</option>
-          </select>
-        </div>
-      </div>
-
-      <div class="formula" style="margin-top:16px;">
-        <span class="key">Score</span> = likes×1 + rt×20 + rep×13.5 + bm×10<br>
-        <span class="key">Revenue</span> = (impressions÷1000) × CPM × 0.525<br>
-        <span class="dim">Source: xai-org/x-algorithm · Jan 2026</span>
-      </div>
-    </div>
-  </div>
-
-  <footer>
-    <span>XEarnings — estimates based on xai-org/x-algorithm (Jan 2026). Not financial advice.</span>
-    <span><a href="https://github.com/xai-org/x-algorithm" target="_blank">Algorithm source</a> &nbsp;·&nbsp; <a href="https://developer.x.com" target="_blank">X Developer</a></span>
-  </footer>
-</div>
-
-<script>
-  const cpmMap={'12':12,'9':9,'5':5,'2':2};
-  function fmt(n){return n.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});}
-  function fmtInt(n){return Math.round(n).toLocaleString();}
-
-  /* Live date in nav */
-  const now = new Date();
-  document.getElementById('nav-date').textContent = now.toLocaleString('en-US',{month:'long',year:'numeric'});
-
-  let currentProfile = null;
-  let isConnected = false;
-
-  function renderSliders() {
-    const panel = document.getElementById('stats-panel');
-    panel.innerHTML = `
-      <div class="slider-group"><div class="slider-label"><span class="slider-name">Posts per week</span><span class="slider-val" id="lbl-posts">7</span></div><input type="range" id="s-posts" min="1" max="21" value="7" step="1"></div>
-      <div class="slider-group"><div class="slider-label"><span class="slider-name">Avg. likes per post</span><span class="slider-val" id="lbl-likes">200</span></div><input type="range" id="s-likes" min="0" max="5000" value="200" step="10"></div>
-      <div class="slider-group"><div class="slider-label"><span class="slider-name">Avg. retweets per post</span><span class="slider-val" id="lbl-rt">40</span></div><input type="range" id="s-rt" min="0" max="1000" value="40" step="5"></div>
-      <div class="slider-group"><div class="slider-label"><span class="slider-name">Avg. replies per post</span><span class="slider-val" id="lbl-rep">20</span></div><input type="range" id="s-rep" min="0" max="500" value="20" step="5"></div>
-      <div class="slider-group"><div class="slider-label"><span class="slider-name">Avg. bookmarks per post</span><span class="slider-val" id="lbl-bm">30</span></div><input type="range" id="s-bm" min="0" max="500" value="30" step="5"></div>
-      <div class="slider-group"><div class="slider-label"><span class="slider-name">Total followers</span><span class="slider-val" id="lbl-fol">10,000</span></div><input type="range" id="s-fol" min="500" max="500000" value="10000" step="500"></div>
-      <div class="slider-group" style="margin-bottom:0;"><div class="slider-label"><span class="slider-name">Premium followers %</span><span class="slider-val" id="lbl-prem">10%</span></div><input type="range" id="s-prem" min="1" max="40" value="10" step="1"></div>
-    `;
-    ['s-posts','s-likes','s-rt','s-rep','s-bm','s-fol','s-prem'].forEach(id=>{
-      document.getElementById(id).addEventListener('input', calc);
-    });
-  }
-
-  function renderLockedStats(p) {
-    const panel = document.getElementById('stats-panel');
-    panel.innerHTML = `
-      <div class="stat-row"><span class="stat-label">Posts per week</span><span class="stat-val">${p.posts_per_week}</span></div>
-      <div class="stat-row"><span class="stat-label">Avg. likes per post</span><span class="stat-val">${(p.avg_likes||0).toLocaleString()}</span></div>
-      <div class="stat-row"><span class="stat-label">Avg. retweets per post</span><span class="stat-val">${(p.avg_rt||0).toLocaleString()}</span></div>
-      <div class="stat-row"><span class="stat-label">Avg. replies per post</span><span class="stat-val">${(p.avg_replies||0).toLocaleString()}</span></div>
-      <div class="stat-row"><span class="stat-label">Avg. bookmarks per post</span><span class="stat-val">${(p.avg_bookmarks||0).toLocaleString()}</span></div>
-      <div class="stat-row"><span class="stat-label">Total followers</span><span class="stat-val">${(p.followers||0).toLocaleString()}</span></div>
-      <div class="stat-row" style="border-bottom:none;"><span class="stat-label">Premium followers est.</span><span class="stat-val">${p.premium_pct||10}%</span></div>
-      <p style="font-size:11px;color:var(--muted);margin-top:14px;line-height:1.6;">Pulled live from your last 100 posts on X. Disconnect to use manual sliders.</p>
-    `;
-  }
-
-  function renderPayoutHistory(history, currentMonth, currentYear, projectedMonthly) {
-    if (!history || !history.length) return;
-    document.getElementById('payout-panel').style.display = 'block';
-    const grid = document.getElementById('payout-grid');
-    const nowMonth = new Date().toLocaleString('en-US',{month:'long'});
-    const nowYear = new Date().getFullYear();
-
-    let html = history.map(h => {
-      const isCurrent = h.month === nowMonth && h.year === nowYear;
-      const cls = isCurrent ? 'payout-card current' : 'payout-card';
-      const status = isCurrent ? 'IN PROGRESS' : 'PAID';
-      return `<div class="${cls}">
-        <div class="payout-month">${h.month.slice(0,3).toUpperCase()} ${h.year}</div>
-        <div class="payout-amount">$${fmt(h.amount)}</div>
-        <div class="payout-status ${isCurrent ? '' : 'paid-tag'}">${status}</div>
-      </div>`;
-    }).join('');
-
-    html += `<div class="payout-card projected">
-      <div class="payout-month">NEXT MO.</div>
-      <div class="payout-amount">$${fmt(projectedMonthly)}</div>
-      <div class="payout-status">PROJECTED</div>
-    </div>`;
-
-    grid.innerHTML = html;
-  }
-
-  function applyProfile(p) {
-    currentProfile = p;
-    isConnected = true;
-
-    const avatarEl = document.getElementById('p-avatar');
-    if (p.profile_image) {
-      avatarEl.innerHTML = `<img src="${p.profile_image}" alt="${p.name}" onerror="this.parentElement.textContent='${p.initials||'?'}'">`;
-    } else {
-      avatarEl.textContent = p.initials || '?';
-    }
-
-    document.getElementById('p-name').textContent = p.name || '—';
-    document.getElementById('p-handle').textContent = p.handle || '';
-    document.getElementById('p-followers').textContent = (p.followers||0).toLocaleString();
-    document.getElementById('p-following').textContent = (p.following||0).toLocaleString();
-    document.getElementById('p-posts').textContent = p.posts_per_week || '—';
-    document.getElementById('p-likes').textContent = (p.avg_likes||0).toLocaleString();
-    document.getElementById('p-total').textContent = (p.tweet_count||0).toLocaleString();
-
-    document.getElementById('connect-section').style.display = 'none';
-    document.getElementById('profile-card').style.display = 'block';
-    document.getElementById('data-source-badge').textContent = 'Live from X';
-
-    renderLockedStats(p);
-    calc();
-  }
-
-  function getValues() {
-    if (isConnected && currentProfile) {
-      return {
-        posts: currentProfile.posts_per_week || 7,
-        likes: currentProfile.avg_likes || 0,
-        rt: currentProfile.avg_rt || 0,
-        rep: currentProfile.avg_replies || 0,
-        bm: currentProfile.avg_bookmarks || 0,
-        fol: currentProfile.followers || 1000,
-        premPct: (currentProfile.premium_pct || 10) / 100
-      };
-    }
-    return {
-      posts: +(document.getElementById('s-posts')?.value||7),
-      likes: +(document.getElementById('s-likes')?.value||200),
-      rt: +(document.getElementById('s-rt')?.value||40),
-      rep: +(document.getElementById('s-rep')?.value||20),
-      bm: +(document.getElementById('s-bm')?.value||30),
-      fol: +(document.getElementById('s-fol')?.value||10000),
-      premPct: +(document.getElementById('s-prem')?.value||10)/100
-    };
-  }
-
-  function calc() {
-    const {posts,likes,rt,rep,bm,fol,premPct} = getValues();
-    const cpm = cpmMap[document.getElementById('s-region').value] || 5;
-
-    if (!isConnected) {
-      const lbls = {posts,likes,rt,rep,bm,fol,prem:Math.round(premPct*100)+'%'};
-      if(document.getElementById('lbl-posts')) document.getElementById('lbl-posts').textContent=posts;
-      if(document.getElementById('lbl-likes')) document.getElementById('lbl-likes').textContent=likes.toLocaleString();
-      if(document.getElementById('lbl-rt')) document.getElementById('lbl-rt').textContent=rt.toLocaleString();
-      if(document.getElementById('lbl-rep')) document.getElementById('lbl-rep').textContent=rep.toLocaleString();
-      if(document.getElementById('lbl-bm')) document.getElementById('lbl-bm').textContent=bm.toLocaleString();
-      if(document.getElementById('lbl-fol')) document.getElementById('lbl-fol').textContent=fol.toLocaleString();
-      if(document.getElementById('lbl-prem')) document.getElementById('lbl-prem').textContent=Math.round(premPct*100)+'%';
-    }
-
-    const score = likes*1+rt*20+rep*13.5+bm*10;
-    const reach = 0.04+(score/10000)*0.06;
-    const impressions = fol*reach;
-    const monetisable = impressions*premPct;
-    const revPerPost = (monetisable/1000)*cpm*0.525;
-    const weekly = revPerPost*posts;
-    const monthly = weekly*4.33;
-
-    document.getElementById('score-display').textContent = fmtInt(score);
-    document.getElementById('score-bar').style.width = Math.min(score/20000*100,100).toFixed(1)+'%';
-    document.getElementById('bd-likes').textContent = fmtInt(likes*1);
-    document.getElementById('bd-rt').textContent = fmtInt(rt*20);
-    document.getElementById('bd-rep').textContent = fmtInt(rep*13.5);
-    document.getElementById('bd-bm').textContent = fmtInt(bm*10);
-    document.getElementById('bd-imp').textContent = fmtInt(monetisable)+' / post';
-    document.getElementById('bd-cpm').textContent = '$'+cpm.toFixed(2);
-    document.getElementById('bd-posts').textContent = posts;
-    document.getElementById('rev-per-post').textContent = '$'+fmt(revPerPost);
-    document.getElementById('e-weekly').textContent = '$'+fmt(weekly);
-    document.getElementById('e-biweekly').textContent = '$'+fmt(weekly*2);
-    document.getElementById('e-monthly').textContent = '$'+fmt(monthly);
-    document.getElementById('e-quarterly').textContent = '$'+fmt(weekly*13);
-    document.getElementById('e-annual').textContent = '$'+fmt(weekly*52);
-
-    if (isConnected && currentProfile?.payout_history) {
-      renderPayoutHistory(currentProfile.payout_history, currentProfile.current_month, currentProfile.current_year, monthly);
-    }
-
-    const verifiedFol = fol*premPct;
-    const eligible = fol>=500 && verifiedFol>=2000;
-    const banner = document.getElementById('elig-banner');
-    const text = document.getElementById('elig-text');
-    if(eligible){banner.className='elig ok';text.textContent='Eligible — 2,000+ verified followers met';}
-    else if(fol<500){banner.className='elig warn';text.textContent='Need 500+ total followers to qualify';}
-    else{banner.className='elig warn';text.textContent='Need 2,000+ verified followers — currently ~'+fmtInt(verifiedFol);}
-  }
-
-  async function disconnect() {
-    await fetch('/api/logout',{method:'POST'});
-    currentProfile = null;
-    isConnected = false;
-    document.getElementById('profile-card').style.display='none';
-    document.getElementById('connect-section').style.display='flex';
-    document.getElementById('payout-panel').style.display='none';
-    document.getElementById('data-source-badge').textContent='Manual';
-    renderSliders();
-    calc();
-  }
-
-  /* Init */
-  renderSliders();
-  document.getElementById('s-region').addEventListener('change', calc);
-  calc();
-
-  fetch('/api/me').then(r=>r.json()).then(data=>{
-    if(data.connected) applyProfile(data.profile);
-  });
-
-  const urlParams = new URLSearchParams(window.location.search);
-  if(urlParams.get('connected')==='1'){
-    const s=document.getElementById('banner-success');
-    s.textContent='Connected! Your real stats have been loaded from X.';
-    s.style.display='block';
-    window.history.replaceState({},'','/');
-    fetch('/api/me').then(r=>r.json()).then(data=>{
-      if(data.connected) applyProfile(data.profile);
-    });
-  }
-  if(urlParams.get('error')){
-    const e=document.getElementById('banner-error');
-    e.textContent='Connection failed: '+urlParams.get('error')+'. Please try again.';
-    e.style.display='block';
-    window.history.replaceState({},'','/');
-  }
-</script>
-</body>
-</html>
+            <option value="2">W

@@ -6,7 +6,7 @@
 <title>XEarnings — Creator Revenue Calculator</title>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#0a0a0a;--s1:#111;--s2:#161616;--s3:#1c1c1c;--b1:rgba(255,255,255,0.06);--b2:rgba(255,255,255,0.11);--t1:#f0f0f0;--t2:#aaa;--t3:#555;--acc:#e7ff52;--acc2:rgba(231,255,82,0.1);--acc3:rgba(231,255,82,0.05);--grn:#4ade80;--grn2:rgba(74,222,128,0.08);--red:#f87171;--red2:rgba(248,113,113,0.08);--amb:#fbbf24;--amb2:rgba(251,191,36,0.08);--r:10px;}
+:root{--bg:#0a0a0a;--s1:#111;--s2:#161616;--b1:rgba(255,255,255,0.06);--b2:rgba(255,255,255,0.11);--t1:#f0f0f0;--t2:#aaa;--t3:#555;--acc:#e7ff52;--acc2:rgba(231,255,82,0.1);--acc3:rgba(231,255,82,0.05);--grn:#4ade80;--grn2:rgba(74,222,128,0.08);--red:#f87171;--red2:rgba(248,113,113,0.08);--amb:#fbbf24;--r:10px;}
 *{box-sizing:border-box;margin:0;padding:0;}
 body{background:var(--bg);color:var(--t1);font-family:'DM Sans',sans-serif;font-size:14px;line-height:1.6;min-height:100vh;}
 body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 59px,rgba(255,255,255,0.015) 59px,rgba(255,255,255,0.015) 60px),repeating-linear-gradient(90deg,transparent,transparent 59px,rgba(255,255,255,0.015) 59px,rgba(255,255,255,0.015) 60px);pointer-events:none;z-index:0;}
@@ -51,8 +51,6 @@ h1 em{font-style:normal;color:var(--acc);}
 .ps-v{font-family:'Syne',sans-serif;font-weight:700;font-size:13px;}
 .disc{font-size:11px;color:var(--t3);cursor:pointer;text-decoration:underline;text-underline-offset:3px;background:none;border:none;padding:0;margin-top:10px;display:inline-block;}
 .disc:hover{color:var(--red);}
-
-/* ELIGIBILITY — shown only when connected */
 .elig-box{border-radius:var(--r);padding:14px 18px;margin-bottom:18px;display:none;}
 .elig-box.ok{background:var(--grn2);border:1px solid rgba(74,222,128,0.2);}
 .elig-box.fail{background:var(--red2);border:1px solid rgba(248,113,113,0.18);}
@@ -65,7 +63,6 @@ h1 em{font-style:normal;color:var(--acc);}
 .elig-reasons li::before{content:'×';font-weight:700;flex-shrink:0;}
 .elig-stats{display:flex;gap:16px;flex-wrap:wrap;margin-top:8px;}
 .es{font-size:11px;color:var(--grn);}
-
 .egrid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;margin-bottom:22px;}
 .ec{background:var(--s2);border:1px solid var(--b1);border-radius:var(--r);padding:12px;}
 .ec.hi{border-color:rgba(231,255,82,0.22);background:var(--acc3);}
@@ -130,59 +127,36 @@ footer a{color:var(--t2);text-decoration:none;}
 @keyframes fu{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
 .hero,.connect,.profile,.mgrid{animation:fu .4s ease both;}
 .mgrid{animation-delay:.06s;}
-@media(max-width:760px){
-  .mgrid{grid-template-columns:1fr;}
-  .pstats{grid-template-columns:repeat(3,1fr);}
-  .egrid{grid-template-columns:repeat(3,1fr);}
-  .hg{grid-template-columns:repeat(3,1fr);}
-  .steps{grid-template-columns:1fr;}
-  .step{border-right:none!important;margin-right:0!important;padding-bottom:10px;}
-}
+@media(max-width:760px){.mgrid{grid-template-columns:1fr;}.pstats{grid-template-columns:repeat(3,1fr);}.egrid{grid-template-columns:repeat(3,1fr);}.hg{grid-template-columns:repeat(3,1fr);}.steps{grid-template-columns:1fr;}.step{border-right:none!important;margin-right:0!important;padding-bottom:10px;}}
 </style>
 </head>
 <body>
 <div class="pg">
   <nav>
-    <a href="/" class="logo">
-      <span class="lx"><svg viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.748l7.73-8.835L1.254 2.25H8.08l4.253 5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg></span>
-      XEarnings
-    </a>
-    <div class="nav-r">
-      <span class="pill dim" id="nav-date"></span>
-      <span class="pill acc">Jan 2026 Algorithm</span>
-    </div>
+    <a href="/" class="logo"><span class="lx"><svg viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.748l7.73-8.835L1.254 2.25H8.08l4.253 5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg></span>XEarnings</a>
+    <div class="nav-r"><span class="pill dim" id="nav-date"></span><span class="pill acc">Jan 2026 Algorithm</span></div>
   </nav>
-
   <div class="hero">
     <p class="eyebrow">Creator revenue calculator</p>
     <h1>How much is your<br>content <em>actually</em> worth?</h1>
     <p class="sub">Real post-by-post earnings from your last 14 days. Every like, retweet, reply, bookmark and verified impression counted directly from X.</p>
   </div>
-
   <div id="b-err" class="bann err"></div>
   <div id="b-ok" class="bann ok"></div>
-
   <div class="connect" id="connect-section">
     <h3>Connect your X account</h3>
     <p>Sign in with OAuth 2.0 — we pull your last 100 posts for real averages, your last 14 days post-by-post, and check your real eligibility for X's Creator Revenue Sharing program.</p>
-    <a href="/auth/x" class="btn">
-      <svg viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.748l7.73-8.835L1.254 2.25H8.08l4.253 5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
-      Sign in with X
-    </a>
+    <a href="/auth/x" class="btn"><svg viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.748l7.73-8.835L1.254 2.25H8.08l4.253 5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>Sign in with X</a>
     <div class="steps">
       <div class="step"><div class="sn">01 — Authorise</div><div class="st">Approve on x.com — we never see your password</div></div>
       <div class="step"><div class="sn">02 — Pull real data</div><div class="st">Last 100 posts averaged + last 14 days per-post</div></div>
       <div class="step"><div class="sn">03 — Real eligibility</div><div class="st">Verified status, impressions and activity checked live</div></div>
     </div>
   </div>
-
   <div class="profile" id="profile-card">
     <div class="ptop">
       <div class="pav" id="p-av">—</div>
-      <div>
-        <div class="pname" id="p-name">—</div>
-        <div class="phandle" id="p-handle">—</div>
-      </div>
+      <div><div class="pname" id="p-name">—</div><div class="phandle" id="p-handle">—</div></div>
       <div class="conn-badge">Live from X</div>
     </div>
     <div class="pstats">
@@ -190,18 +164,15 @@ footer a{color:var(--t2);text-decoration:none;}
       <div><div class="ps-l">Following</div><div class="ps-v" id="p-fing">—</div></div>
       <div><div class="ps-l">Posts/week</div><div class="ps-v" id="p-ppw">—</div></div>
       <div><div class="ps-l">Avg. likes</div><div class="ps-v" id="p-lk">—</div></div>
-      <div><div class="ps-l">Est. 90d impr.</div><div class="ps-v" id="p-imp">—</div></div>
+      <div><div class="ps-l">90d impr.</div><div class="ps-v" id="p-imp">—</div></div>
     </div>
     <button class="disc" onclick="disconnect()">Disconnect</button>
   </div>
-
-  <!-- ELIGIBILITY — only shown when connected -->
   <div class="elig-box" id="elig-box">
     <div class="elig-title" id="elig-title"><span class="elig-dot"></span><span id="elig-text">—</span></div>
     <ul class="elig-reasons" id="elig-reasons"></ul>
     <div class="elig-stats" id="elig-stats"></div>
   </div>
-
   <div class="egrid">
     <div class="ec"><div class="ec-l">Weekly</div><div class="ec-v" id="e-wk">$0.00</div></div>
     <div class="ec hi"><div class="ec-l">Biweekly</div><div class="ec-v" id="e-bw">$0.00</div></div>
@@ -209,28 +180,17 @@ footer a{color:var(--t2);text-decoration:none;}
     <div class="ec"><div class="ec-l">Quarterly</div><div class="ec-v" id="e-qt">$0.00</div></div>
     <div class="ec"><div class="ec-l">Annual</div><div class="ec-v" id="e-yr">$0.00</div></div>
   </div>
-
   <div class="mgrid">
     <div>
       <div class="panel" id="bw-panel" style="display:none;">
-        <div class="ph">
-          <span class="pt">Last 14 days — per post</span>
-          <span class="ltag" id="bw-badge">0 posts</span>
-        </div>
+        <div class="ph"><span class="pt">Last 14 days — per post</span><span class="ltag" id="bw-badge">0 posts</span></div>
         <div class="pb">
-          <div class="bw-top">
-            <span class="bw-ttl">What each post earned</span>
-            <span class="bw-sum" id="bw-sum">Total: $0.00</span>
-          </div>
+          <div class="bw-top"><span class="bw-ttl">What each post earned</span><span class="bw-sum" id="bw-sum">Total: $0.00</span></div>
           <div id="posts-list"></div>
         </div>
       </div>
-
       <div class="panel" id="manual-panel">
-        <div class="ph">
-          <span class="pt">Post performance</span>
-          <span style="font-family:'DM Mono',monospace;font-size:9px;color:var(--t3);border:1px solid var(--b2);padding:2px 7px;border-radius:20px;">Manual</span>
-        </div>
+        <div class="ph"><span class="pt">Post performance</span><span style="font-family:'DM Mono',monospace;font-size:9px;color:var(--t3);border:1px solid var(--b2);padding:2px 7px;border-radius:20px;">Manual</span></div>
         <div class="pb">
           <div class="sg"><div class="sl"><span class="sn2">Posts per week</span><span class="sv" id="lp">7</span></div><input type="range" id="sp" min="1" max="21" value="7" step="1"></div>
           <div class="sg"><div class="sl"><span class="sn2">Avg. likes</span><span class="sv" id="llk">200</span></div><input type="range" id="slk" min="0" max="5000" value="200" step="10"></div>
@@ -241,19 +201,11 @@ footer a{color:var(--t2);text-decoration:none;}
           <div class="sg" style="margin-bottom:0;"><div class="sl"><span class="sn2">Premium followers %</span><span class="sv" id="lpm">10%</span></div><input type="range" id="spm" min="1" max="40" value="10" step="1"></div>
         </div>
       </div>
-
       <div class="panel" id="hist-panel" style="display:none;">
-        <div class="ph">
-          <span class="pt">Payout history + projection</span>
-          <span class="ltag">Your real data</span>
-        </div>
-        <div class="pb">
-          <div class="hg" id="hist-grid"></div>
-          <p style="font-size:10px;color:var(--t3);line-height:1.6;">Estimated from your real engagement history. X pays monthly via Stripe once you hit $10 minimum.</p>
-        </div>
+        <div class="ph"><span class="pt">Payout history + projection</span><span class="ltag">Your real data</span></div>
+        <div class="pb"><div class="hg" id="hist-grid"></div><p style="font-size:10px;color:var(--t3);line-height:1.6;">Estimated from your real engagement. X pays monthly via Stripe once you hit $10.</p></div>
       </div>
     </div>
-
     <div>
       <div class="panel">
         <div class="ph"><span class="pt">Algorithm score</span><span style="font-family:'DM Mono',monospace;font-size:12px;color:var(--acc);" id="sc-n">0</span></div>
@@ -277,8 +229,171 @@ footer a{color:var(--t2);text-decoration:none;}
       <div class="panel" style="margin-bottom:0;">
         <div class="ph"><span class="pt">Audience region</span></div>
         <div class="pb" style="padding-top:12px;padding-bottom:12px;">
-          <select id="s-reg">
-            <option value="12">US / Canada — $12 CPM</option>
-            <option value="9">UK / W. Europe — $9 CPM</option>
-            <option value="5" selected>Global mix — $5 CPM</option>
-            <option value="2">W. Africa / S
+          <select id="s-reg"><option value="12">US / Canada — $12 CPM</option><option value="9">UK / W. Europe — $9 CPM</option><option value="5" selected>Global mix — $5 CPM</option><option value="2">W. Africa / S. Asia — $2 CPM</option></select>
+        </div>
+      </div>
+      <div class="formula" style="margin-top:12px;"><span class="k">Score</span> = likes×1 + rt×20 + rep×13.5 + bm×10<br><span class="k">Revenue</span> = (impressions÷1000) × CPM × 0.525<br><span style="color:var(--t3);">xai-org/x-algorithm · Jan 2026</span></div>
+    </div>
+  </div>
+  <footer><span>XEarnings — estimates only. Algorithm: xai-org/x-algorithm Jan 2026.</span><span><a href="https://github.com/xai-org/x-algorithm" target="_blank">Source</a> · <a href="https://developer.x.com" target="_blank">X Dev</a></span></footer>
+</div>
+<script>
+const cpm_map={'12':12,'9':9,'5':5,'2':2};
+const fmt=n=>n.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
+const fmtI=n=>Math.round(n).toLocaleString();
+const fmtM=n=>n>=1000000?(n/1000000).toFixed(1)+'M':n>=1000?(n/1000).toFixed(1)+'K':Math.round(n).toString();
+let P=null,connected=false;
+
+document.getElementById('nav-date').textContent=new Date().toLocaleString('en-US',{month:'long',year:'numeric'});
+
+function getV(){
+  if(connected&&P)return{posts:P.posts_per_week||7,likes:P.avg_likes||0,rt:P.avg_rt||0,rep:P.avg_replies||0,bm:P.avg_bookmarks||0,fol:P.followers||1000,prem:(P.premium_pct||10)/100};
+  return{posts:+document.getElementById('sp').value,likes:+document.getElementById('slk').value,rt:+document.getElementById('srt').value,rep:+document.getElementById('srp').value,bm:+document.getElementById('sbm').value,fol:+document.getElementById('sfl').value,prem:+document.getElementById('spm').value/100};
+}
+
+function calc(){
+  const{posts,likes,rt,rep,bm,fol,prem}=getV();
+  const cpm=cpm_map[document.getElementById('s-reg').value]||5;
+  if(!connected){
+    document.getElementById('lp').textContent=posts;
+    document.getElementById('llk').textContent=likes.toLocaleString();
+    document.getElementById('lrt').textContent=rt.toLocaleString();
+    document.getElementById('lrp').textContent=rep.toLocaleString();
+    document.getElementById('lbm').textContent=bm.toLocaleString();
+    document.getElementById('lfl').textContent=fol.toLocaleString();
+    document.getElementById('lpm').textContent=Math.round(prem*100)+'%';
+  }
+  const score=likes*1+rt*20+rep*13.5+bm*10;
+  const reach=fol*(0.04+(score/10000)*0.06);
+  const mon=reach*prem;
+  const rpp=(mon/1000)*cpm*0.525;
+  const weekly=rpp*posts;
+  const monthly=weekly*4.33;
+  document.getElementById('sc-n').textContent=fmtI(score);
+  document.getElementById('sc-b').style.width=Math.min(score/20000*100,100).toFixed(1)+'%';
+  document.getElementById('bd-lk').textContent=fmtI(likes);
+  document.getElementById('bd-rt').textContent=fmtI(rt*20);
+  document.getElementById('bd-rp').textContent=fmtI(rep*13.5);
+  document.getElementById('bd-bm').textContent=fmtI(bm*10);
+  document.getElementById('bd-imp').textContent=fmtI(mon)+'/post';
+  document.getElementById('bd-cpm').textContent='$'+cpm.toFixed(2);
+  document.getElementById('bd-pp').textContent=posts;
+  document.getElementById('rev-pp').textContent='$'+fmt(rpp);
+  document.getElementById('e-wk').textContent='$'+fmt(weekly);
+  document.getElementById('e-bw').textContent='$'+fmt(weekly*2);
+  document.getElementById('e-mo').textContent='$'+fmt(monthly);
+  document.getElementById('e-qt').textContent='$'+fmt(weekly*13);
+  document.getElementById('e-yr').textContent='$'+fmt(weekly*52);
+  if(connected&&P?.payout_history)renderHistory(P.payout_history,monthly);
+}
+
+function renderEligibility(p){
+  const box=document.getElementById('elig-box');
+  const title=document.getElementById('elig-title');
+  const text=document.getElementById('elig-text');
+  const reasons=document.getElementById('elig-reasons');
+  const stats=document.getElementById('elig-stats');
+  box.style.display='block';
+  if(p.is_eligible){
+    box.className='elig-box ok';title.className='elig-title ok';
+    text.textContent='Eligible for Creator Revenue Sharing';
+    reasons.innerHTML='';
+    stats.innerHTML=`<span class="es">✓ X Premium verified</span><span class="es">✓ Active in last 30 days</span><span class="es">✓ ${p.followers.toLocaleString()} followers</span>`;
+  }else{
+    box.className='elig-box fail';title.className='elig-title fail';
+    text.textContent='Not eligible for Creator Revenue Sharing';
+    reasons.innerHTML=(p.eligibility_reasons||[]).map(r=>`<li>${r}</li>`).join('');
+    stats.innerHTML=`<span style="font-size:11px;color:var(--t3);">Est. 90d impressions: ${fmtM(p.impressions_90d||0)}</span>${p.days_since_last_post<999?`<span style="font-size:11px;color:var(--t3);">Last post: ${p.days_since_last_post}d ago</span>`:''}`;
+  }
+}
+
+function renderPosts(posts){
+  const list=document.getElementById('posts-list');
+  if(!posts?.length){list.innerHTML='<div class="empty">No posts in the last 14 days.<br>Post on X and reconnect to see your breakdown.</div>';return;}
+  const maxScore=Math.max(...posts.map(p=>p.score),1);
+  const total=posts.reduce((s,p)=>s+p.revenue,0);
+  document.getElementById('bw-sum').textContent='Total: $'+fmt(total);
+  document.getElementById('bw-badge').textContent=posts.length+' post'+(posts.length!==1?'s':'');
+  document.getElementById('e-bw').textContent='$'+fmt(total);
+  list.innerHTML=posts.map(p=>`<div class="pc"><div class="pc-date">${p.date}</div><div class="pc-top"><div class="pc-txt">${p.text||'(no text)'}</div><div class="pc-pay">$${fmt(p.revenue)}</div></div><div class="pc-m"><div class="pm"><span>♥</span><span class="pm-v">${fmtI(p.likes)}</span></div><div class="pm"><span>↺</span><span class="pm-v">${fmtI(p.rt)}</span></div><div class="pm"><span>↩</span><span class="pm-v">${fmtI(p.rep)}</span></div><div class="pm"><span>⊕</span><span class="pm-v">${fmtI(p.bm)}</span></div><div class="pm hi"><span>👁</span><span class="pm-v">${fmtI(p.imp)}</span></div><span class="sc-chip">score ${fmtI(p.score)}</span></div><div class="pc-bar"><div class="pc-bar-f" style="width:${Math.min(p.score/maxScore*100,100).toFixed(1)}%"></div></div></div>`).join('');
+}
+
+function renderHistory(history,projected){
+  if(!history?.length)return;
+  document.getElementById('hist-panel').style.display='block';
+  const nowM=new Date().toLocaleString('en-US',{month:'long'});
+  const nowY=new Date().getFullYear();
+  const grid=document.getElementById('hist-grid');
+  let html=history.map(h=>{const cur=h.month===nowM&&h.year===nowY;return`<div class="hc${cur?' cur':''}"><div class="hc-m">${h.month.slice(0,3).toUpperCase()} ${h.year}</div><div class="hc-a">$${fmt(h.amount)}</div><div class="hc-s">${cur?'NOW':'PAID'}</div></div>`;}).join('');
+  html+=`<div class="hc proj"><div class="hc-m">NEXT</div><div class="hc-a">$${fmt(projected)}</div><div class="hc-s">PROJ.</div></div>`;
+  grid.innerHTML=html;
+}
+
+function applyProfile(p){
+  P=p;connected=true;
+  const av=document.getElementById('p-av');
+  if(p.profile_image){av.innerHTML=`<img src="${p.profile_image}" onerror="this.parentElement.textContent='${p.initials||'?'}'">"`;}
+  else{av.textContent=p.initials||'?';}
+  document.getElementById('p-name').textContent=p.name||'—';
+  document.getElementById('p-handle').textContent=p.handle||'';
+  document.getElementById('p-fol').textContent=(p.followers||0).toLocaleString();
+  document.getElementById('p-fing').textContent=(p.following||0).toLocaleString();
+  document.getElementById('p-ppw').textContent=p.posts_per_week||'—';
+  document.getElementById('p-lk').textContent=(p.avg_likes||0).toLocaleString();
+  document.getElementById('p-imp').textContent=fmtM(p.impressions_90d||0);
+  document.getElementById('connect-section').style.display='none';
+  document.getElementById('profile-card').style.display='block';
+  document.getElementById('manual-panel').style.display='none';
+  renderEligibility(p);
+  if(p.biweekly_posts?.length){document.getElementById('bw-panel').style.display='block';renderPosts(p.biweekly_posts);}
+  calc();
+  // Save to localStorage so refresh works
+  try{localStorage.setItem('xe_profile',JSON.stringify(p));}catch(e){}
+}
+
+function disconnect(){
+  P=null;connected=false;
+  try{localStorage.removeItem('xe_profile');}catch(e){}
+  document.getElementById('profile-card').style.display='none';
+  document.getElementById('connect-section').style.display='block';
+  document.getElementById('manual-panel').style.display='block';
+  document.getElementById('bw-panel').style.display='none';
+  document.getElementById('hist-panel').style.display='none';
+  document.getElementById('elig-box').style.display='none';
+  calc();
+}
+
+['sp','slk','srt','srp','sbm','sfl','spm'].forEach(id=>document.getElementById(id).addEventListener('input',calc));
+document.getElementById('s-reg').addEventListener('change',calc);
+calc();
+
+// Check URL for token (from OAuth callback)
+const up=new URLSearchParams(window.location.search);
+const token=up.get('token');
+if(token){
+  window.history.replaceState({},'','/');
+  fetch('/api/profile/'+token)
+    .then(r=>r.json())
+    .then(d=>{
+      if(d.connected){
+        applyProfile(d.profile);
+        const b=document.getElementById('b-ok');
+        b.textContent='Connected! Real data loaded from X.';
+        b.style.display='block';
+      }
+    });
+} else if(up.get('error')){
+  const b=document.getElementById('b-err');
+  b.textContent='Connection failed: '+up.get('error')+'. Please try again.';
+  b.style.display='block';
+  window.history.replaceState({},'','/');
+} else {
+  // Try localStorage on refresh
+  try{
+    const saved=localStorage.getItem('xe_profile');
+    if(saved)applyProfile(JSON.parse(saved));
+  }catch(e){}
+}
+</script>
+</body>
+</html>

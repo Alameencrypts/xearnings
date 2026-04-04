@@ -175,18 +175,36 @@ app.get('/callback', async (req, res) => {
     const effectivePosts = postsPerWeek || 7;
     const weeklyBase = (reach * premPct / 1000) * cpm * 0.525 * effectivePosts;
 
-    // Future projections only — not historical payouts (X API doesn't expose those)
+    // X pays biweekly — every 2 weeks
+    // Known anchor: April 10, 2026 is a real payout date
+    // Calculate next 4 biweekly payout dates from that anchor
+    const anchor = new Date('2026-04-10');
     const now = new Date();
+
+    // Find the next upcoming payout from anchor
+    // Move forward in 14-day steps until we pass today
+    let nextPayout = new Date(anchor);
+    while (nextPayout <= now) {
+      nextPayout = new Date(nextPayout.getTime() + 14 * 24 * 60 * 60 * 1000);
+    }
+
+    const fmtDate = d => d.toLocaleString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+
+    // Build 4 upcoming biweekly payout projections
+    const biweeklyEarnings = weeklyBase * 2; // 2 weeks of earnings per payout
     const projections = [];
-    for (let i = 0; i <= 2; i++) {
-      const d = new Date(now.getFullYear(), now.getMonth() + i, 1);
-      const variance = i === 0 ? 1 : (0.85 + Math.random() * 0.3);
+    let pd = new Date(nextPayout);
+    for (let i = 0; i < 4; i++) {
+      const variance = i === 0 ? 1 : (0.8 + Math.random() * 0.4);
       projections.push({
-        month: d.toLocaleString('en-US', { month: 'long' }),
-        year: d.getFullYear(),
-        amount: parseFloat((weeklyBase * 4.33 * variance).toFixed(2)),
-        type: i === 0 ? 'current' : 'projected'
+        label: i === 0 ? 'Next payout' : `Payout ${i + 1}`,
+        date: fmtDate(pd),
+        month: pd.toLocaleString('en-US', { month: 'long' }),
+        year: pd.getFullYear(),
+        amount: parseFloat((biweeklyEarnings * variance).toFixed(2)),
+        type: i === 0 ? 'next' : 'projected'
       });
+      pd = new Date(pd.getTime() + 14 * 24 * 60 * 60 * 1000);
     }
 
     const profile = {

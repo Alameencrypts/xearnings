@@ -352,6 +352,35 @@ footer a:hover{color:var(--t1);}
       </div>
     </div>
 
+    <div class="panel">
+      <div class="ph"><span class="pt">Content niche</span><span class="ltag">Affects CPM rate</span></div>
+      <div class="pb" style="padding-top:13px;padding-bottom:13px;">
+        <select id="s-niche">
+          <option value="2.2">Finance / Crypto / Business — 2.2× CPM</option>
+          <option value="1.8">Tech / AI / Science — 1.8× CPM</option>
+          <option value="1.4">News / Politics — 1.4× CPM</option>
+          <option value="1.0" selected>Lifestyle / General — 1.0× CPM</option>
+          <option value="0.9">Entertainment / Memes — 0.9× CPM</option>
+          <option value="0.8">Gaming — 0.8× CPM</option>
+        </select>
+        <p style="font-size:10px;color:var(--t3);margin-top:8px;line-height:1.6;">Finance & tech advertisers pay 2–3× more per engagement. Same as YouTube's niche CPM model.</p>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="ph"><span class="pt">Content type</span><span class="ltag">X algorithm weight</span></div>
+      <div class="pb" style="padding-top:13px;padding-bottom:13px;">
+        <select id="s-ctype">
+          <option value="1.4">Video (native) — 1.4× reach</option>
+          <option value="1.2">Threads / Long-form — 1.2× reach</option>
+          <option value="1.0" selected>Text posts — 1.0× reach</option>
+          <option value="1.1">Images / Infographics — 1.1× reach</option>
+          <option value="0.7">Posts with external links — 0.7× reach</option>
+        </select>
+        <p style="font-size:10px;color:var(--t3);margin-top:8px;line-height:1.6;">X's algorithm gives native video 10× more distribution than text. Links are penalised 30–50%.</p>
+      </div>
+    </div>
+
     <div class="formula">
       <span class="fk">Score</span> = likes×1 + rt×20 + rep×13.5 + bm×10<br>
       <span class="fk">Revenue</span> = (impressions÷1000) × CPM × 0.525<br>
@@ -393,9 +422,11 @@ function calc(){
     document.getElementById('lpm').textContent=Math.round(prem*100)+'%';
   }
   const score=likes*1+rt*20+rep*13.5+bm*10;
-  const reach=fol*(0.04+(score/10000)*0.06);
+  const nicheMult=+(document.getElementById('s-niche')?.value||1.0);
+  const ctypeMult=+(document.getElementById('s-ctype')?.value||1.0);
+  const reach=fol*(0.04+(score/10000)*0.06)*ctypeMult;
   const mon=reach*prem;
-  const rpp=(mon/1000)*cpm*0.525;
+  const rpp=(mon/1000)*cpm*nicheMult*0.525;
   const weekly=rpp*posts;
   const monthly=weekly*4.33;
   document.getElementById('sc-n').textContent=fmtI(score);
@@ -406,6 +437,8 @@ function calc(){
   document.getElementById('bd-bm').textContent=fmtI(bm*10);
   document.getElementById('bd-imp').textContent=fmtI(mon)+' / post';
   document.getElementById('bd-cpm').textContent='$'+cpm.toFixed(2);
+  const nicheEl=document.getElementById('bd-niche');if(nicheEl)nicheEl.textContent=nicheMult.toFixed(1)+'×';
+  const ctypeEl=document.getElementById('bd-ctype');if(ctypeEl)ctypeEl.textContent=ctypeMult.toFixed(1)+'×';
   document.getElementById('bd-pp').textContent=posts;
   document.getElementById('rev-pp').textContent='$'+fmt(rpp);
   document.getElementById('e-wk').textContent='$'+fmt(weekly);
@@ -512,6 +545,7 @@ function disconnect(){
 }
 
 ['sp','slk','srt','srp','sbm','sfl','spm'].forEach(id=>document.getElementById(id).addEventListener('input',calc));
+['s-niche','s-ctype'].forEach(id=>{const el=document.getElementById(id);if(el)el.addEventListener('change',calc);});
 document.getElementById('s-reg').addEventListener('change',calc);
 calc();
 

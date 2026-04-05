@@ -519,16 +519,16 @@ function applyProfile(p){
   document.getElementById('p-fing').textContent=(p.following||0).toLocaleString();
   document.getElementById('p-14d').textContent=p.biweekly_count||'0';
   document.getElementById('p-imp').textContent=fmtM(p.impressions_14d||0);
-  // Show Sorsa score if available
+  // Show XEarnings Influence Score
   const sorsaN = document.getElementById('sorsa-n');
   const sorsaLbl = document.getElementById('sorsa-lbl');
   if(p.sorsa_score !== null && p.sorsa_score !== undefined){
-    sorsaN.textContent = Math.round(p.sorsa_score).toLocaleString();
-    if(p.sorsa_label) sorsaLbl.textContent = p.sorsa_label;
+    sorsaN.textContent = p.sorsa_score.toLocaleString();
+    const lbl = p.sorsa_label || '—';
+    const lblColor = lbl==='Elite'?'#f59e0b':lbl==='Established'?'#a78bfa':lbl==='Growing'?'#4ade80':lbl==='Rising'?'#60a5fa':'#888';
+    sorsaLbl.textContent = lbl;
+    sorsaLbl.style.color = lblColor;
     document.getElementById('sorsa-card').style.borderColor='rgba(167,139,250,0.25)';
-  } else {
-    sorsaN.textContent = 'N/A';
-    sorsaLbl.textContent = 'Add SORSA_API_KEY';
   }
   document.getElementById('connect-section').style.display='none';
   document.getElementById('profile-card').style.display='block';

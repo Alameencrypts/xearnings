@@ -242,7 +242,7 @@ footer a:hover{color:var(--t1);}
       <div class="ps"><div class="ps-l">Followers</div><div class="ps-v" id="p-fol">—</div></div>
       <div class="ps"><div class="ps-l">Following</div><div class="ps-v" id="p-fing">—</div></div>
       <div class="ps"><div class="ps-l">Posts (14d)</div><div class="ps-v acc" id="p-14d">—</div></div>
-      <div class="ps"><div class="ps-l">14d Impressions</div><div class="ps-v acc" id="p-imp">—</div></div>
+      <div class="ps"><div class="ps-l">14d Impr. (est.)</div><div class="ps-v acc" id="p-imp">—</div></div>
     </div>
     <button class="disc" onclick="disconnect()">Disconnect account</button>
   </div>
@@ -456,7 +456,7 @@ function renderPosts(posts){
         <div class="pm"><span>↺</span>&nbsp;<b>${fmtI(p.rt)}</b></div>
         <div class="pm"><span>↩</span>&nbsp;<b>${fmtI(p.rep)}</b></div>
         <div class="pm"><span>⊕</span>&nbsp;<b>${fmtI(p.bm)}</b></div>
-        <div class="pm hi"><span>👁</span>&nbsp;<b>${fmtI(p.imp)}</b></div>
+        <div class="pm hi"><span>👁</span>&nbsp;<b>${fmtI(p.imp)}</b><span style="font-size:8px;opacity:.6;">est.</span></div>
         <span class="sc-chip">score ${fmtI(p.score)}</span>
       </div>
       <div class="pc-bar"><div class="pc-fill" style="width:${Math.min(p.score/maxScore*100,100).toFixed(1)}%"></div></div>

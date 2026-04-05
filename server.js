@@ -64,24 +64,40 @@ app.get('/callback', async (req, res) => {
     const { data: user } = await userRes.json();
     const followers = user.public_metrics.followers_count;
 
-    // Fetch Sorsa Score for the user
-    let sorsaScore = null;
-    let sorsaLabel = null;
-    try {
-      const sorsaKey = process.env.SORSA_API_KEY;
-      if (sorsaKey) {
-        const sorsaRes = await fetch(`https://api.sorsa.io/v2/score/${user.username}`, {
-          headers: { Accept: 'application/json', ApiKey: sorsaKey }
-        });
-        if (sorsaRes.ok) {
-          const sorsaData = await sorsaRes.json();
-          sorsaScore = sorsaData.score ?? sorsaData.sorsa_score ?? sorsaData.value ?? null;
-          sorsaLabel = sorsaData.label ?? sorsaData.tier ?? null;
-        }
-      }
-    } catch (e) {
-      console.log('Sorsa fetch failed (non-critical):', e.message);
-    }
+    // XEarnings Influence Score (0–1000)
+    // Modelled on key factors: follower quality, engagement rate,
+    // account age, posting consistency, verified ratio, algo score
+    const accountAgeMs = Date.now() - new Date(user.created_at).getTime();
+    const accountAgeDays = accountAgeMs / (1000 * 60 * 60 * 24);
+    const accountAgeScore = Math.min(accountAgeDays / 1825, 1) * 150; // max 150 pts for 5+ years
+
+    const followerScore = Math.min(Math.log10(Math.max(followers, 1)) / Math.log10(1000000), 1) * 200; // max 200 pts
+
+    const engagementRate = allTweets.length > 0
+      ? allTweets.reduce((s, t) => {
+          const m = t.public_metrics || {};
+          return s + (m.like_count||0) + (m.retweet_count||0) + (m.reply_count||0) + (m.bookmark_count||0);
+        }, 0) / allTweets.length / Math.max(followers, 1)
+      : 0;
+    const engScore = Math.min(engagementRate / 0.05, 1) * 250; // max 250 pts (5% eng rate = max)
+
+    const algoScoreCalc = avgLikes*1 + avgRt*20 + avgRep*13.5 + avgBm*10;
+    const algoScore = Math.min(algoScoreCalc / 5000, 1) * 200; // max 200 pts
+
+    const consistencyScore = Math.min(postsPerWeek || 0, 14) / 14 * 100; // max 100 pts for 2/day
+
+    const verifiedBonus = (user.verified || user.verified_type) ? 100 : 0; // 100 pts for verified
+
+    const rawInfluence = accountAgeScore + followerScore + engScore + algoScore + consistencyScore + verifiedBonus;
+    const influenceScore = Math.round(Math.min(rawInfluence, 1000));
+
+    // Label tiers
+    let influenceLabel = 'Rising';
+    if (influenceScore >= 800) influenceLabel = 'Elite';
+    else if (influenceScore >= 600) influenceLabel = 'Established';
+    else if (influenceScore >= 400) influenceLabel = 'Growing';
+    else if (influenceScore >= 200) influenceLabel = 'Rising';
+    else influenceLabel = 'New';
 
     // Fetch last 100 tweets
     const allTweetsRes = await fetch(
@@ -260,8 +276,8 @@ app.get('/callback', async (req, res) => {
       projections,
       current_month: now.toLocaleString('en-US', { month: 'long' }),
       current_year: now.getFullYear(),
-      sorsa_score: sorsaScore,
-      sorsa_label: sorsaLabel,
+      sorsa_score: influenceScore,
+      sorsa_label: influenceLabel,
       is_eligible: isEligible,
       eligibility_reasons: eligibilityReasons,
       is_verified: isVerified,

@@ -72,14 +72,16 @@ app.get('/callback', async (req, res) => {
     const allTweetsData = await allTweetsRes.json();
     const allTweets = allTweetsData.data || [];
 
-    // Fetch biweekly tweets
-    const since = new Date(Date.now() - 14 * 24 * 60 * 60 * 1000).toISOString();
+    // Fetch recent tweets — filter to last 14 days in code
+    // (start_time requires Elevated API access, so we filter manually)
     const bwRes = await fetch(
-      `https://api.x.com/2/users/${user.id}/tweets?max_results=100&tweet.fields=public_metrics,created_at,text&exclude=retweets,replies&start_time=${since}`,
+      `https://api.x.com/2/users/${user.id}/tweets?max_results=100&tweet.fields=public_metrics,created_at,text&exclude=retweets,replies`,
       { headers: { Authorization: 'Bearer ' + token } }
     );
     const bwData = await bwRes.json();
-    const bwTweets = bwData.data || [];
+    const allBwTweets = bwData.data || [];
+    const fourteenDaysAgo = Date.now() - 14 * 24 * 60 * 60 * 1000;
+    const bwTweets = allBwTweets.filter(t => new Date(t.created_at).getTime() > fourteenDaysAgo);
 
     const avg = (arr, key) => arr.length
       ? Math.round(arr.reduce((s, t) => s + (t.public_metrics?.[key] || 0), 0) / arr.length) : 0;
@@ -91,24 +93,30 @@ app.get('/callback', async (req, res) => {
       const m = tweet.public_metrics || {};
       const likes = m.like_count || 0, rt = m.retweet_count || 0;
       const rep = m.reply_count || 0, bm = m.bookmark_count || 0;
-      const imp = m.impression_count || 0;
+      // impression_count only available on Elevated API tier
+      // estimate from engagement signals + follower reach
       const score = likes + rt * 20 + rep * 13.5 + bm * 10;
-      const reach = imp > 0 ? imp : followers * (0.04 + (score / 10000) * 0.06);
+      const engagementRate = (likes + rt + rep + bm) / Math.max(followers, 1);
+      const reachMultiplier = 0.04 + Math.min(engagementRate * 10, 0.15) + (score / 10000) * 0.06;
+      const reach = Math.round(followers * reachMultiplier);
       return {
         likes, rt, rep, bm,
-        imp: imp || Math.round(reach),
+        imp: reach,
         score: Math.round(score),
         revenue: parseFloat(((reach * premPct / 1000) * cpm * 0.525).toFixed(4))
       };
     }
 
-    // Real 14d impressions from actual tweet data
+    // 14d impressions — estimated from engagement since impression_count
+    // requires Elevated API access not available on Basic tier
     const impressions_14d = bwTweets.reduce((s, t) => {
-      const imp = t.public_metrics?.impression_count || 0;
-      const likes = t.public_metrics?.like_count || 0;
-      const rt = t.public_metrics?.retweet_count || 0;
-      const score = likes + rt * 20;
-      return s + (imp > 0 ? imp : followers * (0.04 + (score / 10000) * 0.06));
+      const m = t.public_metrics || {};
+      const likes = m.like_count || 0, rt = m.retweet_count || 0;
+      const rep = m.reply_count || 0, bm = m.bookmark_count || 0;
+      const score = likes + rt * 20 + rep * 13.5 + bm * 10;
+      const engRate = (likes + rt + rep + bm) / Math.max(followers, 1);
+      const reach = followers * (0.04 + Math.min(engRate * 10, 0.15) + (score / 10000) * 0.06);
+      return s + reach;
     }, 0);
 
     const posts = bwTweets.map(t => ({
@@ -145,9 +153,12 @@ app.get('/callback', async (req, res) => {
     const ninetyAgo = Date.now() - 90 * 24 * 60 * 60 * 1000;
     const last90 = allTweets.filter(t => new Date(t.created_at) > ninetyAgo);
     const totalImp = last90.reduce((s, t) => {
-      const imp = t.public_metrics?.impression_count || 0;
-      const sc = (t.public_metrics?.like_count || 0) + (t.public_metrics?.retweet_count || 0) * 20;
-      return s + (imp > 0 ? imp : followers * (0.04 + (sc / 10000) * 0.06));
+      const m = t.public_metrics || {};
+      const likes = m.like_count || 0, rt = m.retweet_count || 0;
+      const rep = m.reply_count || 0, bm = m.bookmark_count || 0;
+      const sc = likes + rt * 20 + rep * 13.5 + bm * 10;
+      const engRate = (likes + rt + rep + bm) / Math.max(followers, 1);
+      return s + followers * (0.04 + Math.min(engRate * 10, 0.15) + (sc / 10000) * 0.06);
     }, 0);
 
     // Verified check

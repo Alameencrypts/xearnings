@@ -83,6 +83,19 @@ app.get('/callback', async (req, res) => {
     const fourteenDaysAgo = Date.now() - 14 * 24 * 60 * 60 * 1000;
     const bwTweets = allBwTweets.filter(t => new Date(t.created_at).getTime() > fourteenDaysAgo);
 
+    // Debug — log to Render console
+    console.log('=== XEARNINGS DEBUG ===');
+    console.log('Total tweets from API:', allBwTweets.length);
+    console.log('Tweets in last 14 days:', bwTweets.length);
+    console.log('14 days ago:', new Date(fourteenDaysAgo).toISOString());
+    if (allBwTweets.length > 0) {
+      console.log('Most recent tweet date:', allBwTweets[0].created_at);
+      console.log('Oldest tweet date:', allBwTweets[allBwTweets.length-1].created_at);
+    }
+    console.log('API response keys:', Object.keys(bwData));
+    if (bwData.errors) console.log('API errors:', JSON.stringify(bwData.errors));
+    console.log('======================');
+
     const avg = (arr, key) => arr.length
       ? Math.round(arr.reduce((s, t) => s + (t.public_metrics?.[key] || 0), 0) / arr.length) : 0;
 

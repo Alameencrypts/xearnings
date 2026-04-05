@@ -64,6 +64,25 @@ app.get('/callback', async (req, res) => {
     const { data: user } = await userRes.json();
     const followers = user.public_metrics.followers_count;
 
+    // Fetch Sorsa Score for the user
+    let sorsaScore = null;
+    let sorsaLabel = null;
+    try {
+      const sorsaKey = process.env.SORSA_API_KEY;
+      if (sorsaKey) {
+        const sorsaRes = await fetch(`https://api.sorsa.io/v2/score/${user.username}`, {
+          headers: { Accept: 'application/json', ApiKey: sorsaKey }
+        });
+        if (sorsaRes.ok) {
+          const sorsaData = await sorsaRes.json();
+          sorsaScore = sorsaData.score ?? sorsaData.sorsa_score ?? sorsaData.value ?? null;
+          sorsaLabel = sorsaData.label ?? sorsaData.tier ?? null;
+        }
+      }
+    } catch (e) {
+      console.log('Sorsa fetch failed (non-critical):', e.message);
+    }
+
     // Fetch last 100 tweets
     const allTweetsRes = await fetch(
       `https://api.x.com/2/users/${user.id}/tweets?max_results=100&tweet.fields=public_metrics,created_at&exclude=retweets,replies`,
@@ -241,6 +260,8 @@ app.get('/callback', async (req, res) => {
       projections,
       current_month: now.toLocaleString('en-US', { month: 'long' }),
       current_year: now.getFullYear(),
+      sorsa_score: sorsaScore,
+      sorsa_label: sorsaLabel,
       is_eligible: isEligible,
       eligibility_reasons: eligibilityReasons,
       is_verified: isVerified,

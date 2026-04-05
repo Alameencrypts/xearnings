@@ -190,22 +190,16 @@ app.get('/callback', async (req, res) => {
 
     const fmtDate = d => d.toLocaleString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
 
-    // Build 4 upcoming biweekly payout projections
-    const biweeklyEarnings = weeklyBase * 2; // 2 weeks of earnings per payout
-    const projections = [];
-    let pd = new Date(nextPayout);
-    for (let i = 0; i < 4; i++) {
-      const variance = i === 0 ? 1 : (0.8 + Math.random() * 0.4);
-      projections.push({
-        label: i === 0 ? 'Next payout' : `Payout ${i + 1}`,
-        date: fmtDate(pd),
-        month: pd.toLocaleString('en-US', { month: 'long' }),
-        year: pd.getFullYear(),
-        amount: parseFloat((biweeklyEarnings * variance).toFixed(2)),
-        type: i === 0 ? 'next' : 'projected'
-      });
-      pd = new Date(pd.getTime() + 14 * 24 * 60 * 60 * 1000);
-    }
+    // Only show the next payout — future ones are unknowable
+    const biweeklyEarnings = weeklyBase * 2;
+    const projections = [
+      {
+        label: 'Estimated next payout',
+        date: fmtDate(nextPayout),
+        amount: parseFloat(biweeklyEarnings.toFixed(2)),
+        type: 'next'
+      }
+    ];
 
     const profile = {
       name: user.name,

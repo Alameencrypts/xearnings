@@ -92,7 +92,7 @@ h1 .ya{color:var(--acc);}
 .eok{font-size:11px;color:var(--grn);font-weight:700;}
 
 /* EARNINGS */
-.egrid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;margin-bottom:26px;}
+.egrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-bottom:26px;max-width:400px;}
 .ec{background:var(--s1);border:1px solid var(--b1);border-radius:var(--r);padding:16px 14px;transition:border-color .2s;}
 .ec:hover{border-color:var(--b2);}
 .ec.hi{border-color:rgba(212,255,0,0.18);background:var(--acc3);position:relative;}
@@ -151,7 +151,7 @@ select{width:100%;background:var(--s2);border:1px solid var(--b2);border-radius:
 .sb{height:100%;background:var(--acc);border-radius:1px;transition:width .4s ease;}
 
 /* PROJECTIONS */
-.proj-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-bottom:12px;}
+.proj-grid{display:grid;grid-template-columns:1fr;gap:10px;margin-bottom:12px;max-width:300px;}
 .pj{background:var(--s2);border:1px solid var(--b1);border-radius:var(--r2);padding:10px 12px;text-align:center;}
 .pj.cur{border-color:rgba(212,255,0,0.2);background:var(--acc3);}
 .pj.prj{border-color:rgba(0,230,118,0.18);background:var(--grn2);}
@@ -258,11 +258,8 @@ footer a:hover{color:var(--t1);}
 </div>
 
 <div class="egrid">
-  <div class="ec"><div class="ec-l">Weekly</div><div class="ec-v" id="e-wk">$0.00</div></div>
-  <div class="ec hi"><div class="ec-l">Biweekly</div><div class="ec-v" id="e-bw">$0.00</div></div>
-  <div class="ec"><div class="ec-l">Monthly</div><div class="ec-v" id="e-mo">$0.00</div></div>
-  <div class="ec"><div class="ec-l">Quarterly</div><div class="ec-v" id="e-qt">$0.00</div></div>
-  <div class="ec"><div class="ec-l">Annual</div><div class="ec-v" id="e-yr">$0.00</div></div>
+  <div class="ec"><div class="ec-l">Weekly est.</div><div class="ec-v" id="e-wk">$0.00</div></div>
+  <div class="ec hi"><div class="ec-l">Biweekly est.</div><div class="ec-v" id="e-bw">$0.00</div></div>
 </div>
 
 <div class="mgrid">
@@ -302,12 +299,12 @@ footer a:hover{color:var(--t1);}
     <!-- PROJECTIONS -->
     <div class="panel" id="proj-panel" style="display:none;">
       <div class="ph">
-        <span class="pt">Upcoming biweekly payouts</span>
+        <span class="pt">Estimated next payout</span>
         <span class="ltag">Based on your engagement</span>
       </div>
       <div class="pb">
         <div class="proj-grid" id="proj-grid"></div>
-        <p style="font-size:10px;color:var(--t3);line-height:1.7;">X pays biweekly (every 2 weeks) via Stripe. Dates calculated from your real payout cycle. Amounts are projections based on your engagement — minimum <b style="color:var(--t2);">$30</b> to receive payment.</p>
+        <p style="font-size:10px;color:var(--t3);line-height:1.7;">Based on your current engagement rate. X pays biweekly via Stripe — you need a minimum of <b style="color:var(--t2);">$30</b> accumulated to receive a payout.</p>
       </div>
     </div>
   </div>
@@ -413,9 +410,7 @@ function calc(){
   document.getElementById('rev-pp').textContent='$'+fmt(rpp);
   document.getElementById('e-wk').textContent='$'+fmt(weekly);
   document.getElementById('e-bw').textContent='$'+fmt(weekly*2);
-  document.getElementById('e-mo').textContent='$'+fmt(monthly);
-  document.getElementById('e-qt').textContent='$'+fmt(weekly*13);
-  document.getElementById('e-yr').textContent='$'+fmt(weekly*52);
+
   if(connected&&P?.projections)renderProjections(P.projections);
 }
 
@@ -472,14 +467,12 @@ function renderProjections(projections){
   if(!projections?.length)return;
   document.getElementById('proj-panel').style.display='block';
   const grid=document.getElementById('proj-grid');
-  grid.innerHTML=projections.map(p=>{
-    const cls=p.type==='next'?' cur':' prj';
-    return`<div class="pj${cls}">
-      <div class="pj-m">${p.label.toUpperCase()}</div>
-      <div class="pj-a">$${fmt(p.amount)}</div>
-      <div class="pj-s">${p.date}</div>
-    </div>`;
-  }).join('');
+  const p=projections[0];
+  grid.innerHTML=`<div class="pj cur" style="max-width:300px;">
+    <div class="pj-m">ESTIMATED NEXT PAYOUT</div>
+    <div class="pj-a" style="font-size:32px;">$${fmt(p.amount)}</div>
+    <div class="pj-s" style="font-size:11px;margin-top:6px;">${p.date}</div>
+  </div>`;
 }
 
 function applyProfile(p){

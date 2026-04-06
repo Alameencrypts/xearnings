@@ -6,9 +6,12 @@ const crypto = require('crypto');
 const app = express();
 app.use(express.json());
 app.set('trust proxy', 1);
-// Serve index.html explicitly at root
+const path = require('path');
+app.use(express.static(path.join(__dirname, 'public')));
+
+// Always serve index.html for root
 app.get('/', (req, res) => {
-  res.sendFile(__dirname + '/index.html');
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
 const profileStore = new Map();

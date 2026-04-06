@@ -70,41 +70,6 @@ app.get('/callback', async (req, res) => {
     const { data: user } = await userRes.json();
     const followers = user.public_metrics.followers_count;
 
-    // XEarnings Influence Score (0–1000)
-    // Modelled on key factors: follower quality, engagement rate,
-    // account age, posting consistency, verified ratio, algo score
-    const accountAgeMs = Date.now() - new Date(user.created_at).getTime();
-    const accountAgeDays = accountAgeMs / (1000 * 60 * 60 * 24);
-    const accountAgeScore = Math.min(accountAgeDays / 1825, 1) * 150; // max 150 pts for 5+ years
-
-    const followerScore = Math.min(Math.log10(Math.max(followers, 1)) / Math.log10(1000000), 1) * 200; // max 200 pts
-
-    const engagementRate = allTweets.length > 0
-      ? allTweets.reduce((s, t) => {
-          const m = t.public_metrics || {};
-          return s + (m.like_count||0) + (m.retweet_count||0) + (m.reply_count||0) + (m.bookmark_count||0);
-        }, 0) / allTweets.length / Math.max(followers, 1)
-      : 0;
-    const engScore = Math.min(engagementRate / 0.05, 1) * 250; // max 250 pts (5% eng rate = max)
-
-    const algoScoreCalc = avgLikes*1 + avgRt*20 + avgRep*13.5 + avgBm*10;
-    const algoScore = Math.min(algoScoreCalc / 5000, 1) * 200; // max 200 pts
-
-    const consistencyScore = Math.min(postsPerWeek || 0, 14) / 14 * 100; // max 100 pts for 2/day
-
-    const verifiedBonus = (user.verified || user.verified_type) ? 100 : 0; // 100 pts for verified
-
-    const rawInfluence = accountAgeScore + followerScore + engScore + algoScore + consistencyScore + verifiedBonus;
-    const influenceScore = Math.round(Math.min(rawInfluence, 1000));
-
-    // Label tiers
-    let influenceLabel = 'Rising';
-    if (influenceScore >= 800) influenceLabel = 'Elite';
-    else if (influenceScore >= 600) influenceLabel = 'Established';
-    else if (influenceScore >= 400) influenceLabel = 'Growing';
-    else if (influenceScore >= 200) influenceLabel = 'Rising';
-    else influenceLabel = 'New';
-
     // Fetch last 100 tweets
     const allTweetsRes = await fetch(
       `https://api.x.com/2/users/${user.id}/tweets?max_results=100&tweet.fields=public_metrics,created_at&exclude=retweets,replies`,
@@ -235,6 +200,41 @@ app.get('/callback', async (req, res) => {
     const avgRt = avg(allTweets, 'retweet_count');
     const avgRep = avg(allTweets, 'reply_count');
     const avgBm = avg(allTweets, 'bookmark_count');
+
+    // XEarnings Influence Score (0–1000)
+    // Modelled on key factors: follower quality, engagement rate,
+    // account age, posting consistency, verified ratio, algo score
+    const accountAgeMs = Date.now() - new Date(user.created_at).getTime();
+    const accountAgeDays = accountAgeMs / (1000 * 60 * 60 * 24);
+    const accountAgeScore = Math.min(accountAgeDays / 1825, 1) * 150; // max 150 pts for 5+ years
+
+    const followerScore = Math.min(Math.log10(Math.max(followers, 1)) / Math.log10(1000000), 1) * 200; // max 200 pts
+
+    const engagementRate = allTweets.length > 0
+      ? allTweets.reduce((s, t) => {
+          const m = t.public_metrics || {};
+          return s + (m.like_count||0) + (m.retweet_count||0) + (m.reply_count||0) + (m.bookmark_count||0);
+        }, 0) / allTweets.length / Math.max(followers, 1)
+      : 0;
+    const engScore = Math.min(engagementRate / 0.05, 1) * 250; // max 250 pts (5% eng rate = max)
+
+    const algoScoreCalc = avgLikes*1 + avgRt*20 + avgRep*13.5 + avgBm*10;
+    const algoScore = Math.min(algoScoreCalc / 5000, 1) * 200; // max 200 pts
+
+    const consistencyScore = Math.min(postsPerWeek || 0, 14) / 14 * 100; // max 100 pts for 2/day
+
+    const verifiedBonus = (user.verified || user.verified_type) ? 100 : 0; // 100 pts for verified
+
+    const rawInfluence = accountAgeScore + followerScore + engScore + algoScore + consistencyScore + verifiedBonus;
+    const influenceScore = Math.round(Math.min(rawInfluence, 1000));
+
+    // Label tiers
+    let influenceLabel = 'Rising';
+    if (influenceScore >= 800) influenceLabel = 'Elite';
+    else if (influenceScore >= 600) influenceLabel = 'Established';
+    else if (influenceScore >= 400) influenceLabel = 'Growing';
+    else if (influenceScore >= 200) influenceLabel = 'Rising';
+    else influenceLabel = 'New';
     const score = avgLikes + avgRt * 20 + avgRep * 13.5 + avgBm * 10;
     const reach = followers * (0.04 + (score / 10000) * 0.06);
     const effectivePosts = postsPerWeek || 7;

@@ -216,7 +216,7 @@ footer a:hover{color:var(--t1);}
 <div class="connect" id="connect-section">
   <h3>Connect your X account</h3>
   <p>Sign in with OAuth 2.0 — we pull your last 100 posts for engagement averages, your last 14 days post-by-post with real impression counts, and check your actual eligibility for X's Creator Revenue Sharing.</p>
-  <a href="/auth/x" class="btn-x">
+  <a href="/auth/x" class="btn-x" onclick="fetch('/api/ping')">
     <svg viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.748l7.73-8.835L1.254 2.25H8.08l4.253 5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
     Sign in with X
   </a>
@@ -561,7 +561,6 @@ document.getElementById('s-reg').addEventListener('change',calc);
 calc();
 
 const up=new URLSearchParams(window.location.search);
-const profileB64=up.get('profile');
 const token=up.get('token');
 
 function showConnected(profile){
@@ -572,27 +571,30 @@ function showConnected(profile){
   setTimeout(()=>b.style.display='none',4000);
 }
 
-if(profileB64||token){
+if(token){
   window.history.replaceState({},'','/');
-  // Try base64 URL first (works even if server restarted)
-  if(profileB64){
-    try{
-      const profile=JSON.parse(atob(profileB64.replace(/-/g,'+').replace(/_/g,'/')));
-      showConnected(profile);
-    }catch(e){
-      console.error('Profile decode error:',e);
-      // Fallback to token
-      if(token){
-        fetch('/api/profile/'+token).then(r=>r.json()).then(d=>{
-          if(d.connected) showConnected(d.profile);
-        });
-      }
-    }
-  } else if(token){
-    fetch('/api/profile/'+token).then(r=>r.json()).then(d=>{
-      if(d.connected) showConnected(d.profile);
-    });
+  // Retry fetching profile up to 5 times with delay
+  // (server may need a moment to wake up on free tier)
+  let attempts=0;
+  function fetchProfile(){
+    attempts++;
+    fetch('/api/profile/'+token)
+      .then(r=>r.json())
+      .then(d=>{
+        if(d.connected){
+          showConnected(d.profile);
+        } else if(attempts<5){
+          setTimeout(fetchProfile, 1500);
+        } else {
+          document.getElementById('b-err').textContent='Connection timed out. Please try signing in again.';
+          document.getElementById('b-err').style.display='block';
+        }
+      })
+      .catch(()=>{
+        if(attempts<5) setTimeout(fetchProfile,1500);
+      });
   }
+  fetchProfile();
 }else if(up.get('error')){
   const b=document.getElementById('b-err');
   b.textContent='Connection failed: '+up.get('error')+'. Please try again.';

@@ -294,13 +294,9 @@ app.get('/callback', async (req, res) => {
       api_has_tweets: allTweets.length > 0
     };
 
-    const storeKey = crypto.randomBytes(16).toString('hex');
-    profileStore.set(storeKey, { profile, ts: Date.now() });
-    for (const [k, v] of profileStore.entries()) {
-      if (Date.now() - v.ts > 60 * 60 * 1000) profileStore.delete(k);
-    }
-
-    res.redirect('/?token=' + storeKey);
+    // Encode profile as base64 in URL to avoid in-memory store loss on Render free tier spin-down
+    const profileB64 = Buffer.from(JSON.stringify(profile)).toString('base64url');
+    res.redirect('/?profile=' + profileB64);
   } catch (err) {
     console.error('OAuth error:', err);
     res.redirect('/?error=token_exchange_failed');

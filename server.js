@@ -294,49 +294,20 @@ app.get('/callback', async (req, res) => {
       api_has_tweets: allTweets.length > 0
     };
 
-    // Store profile AND encode in URL as fallback
     const storeKey = crypto.randomBytes(16).toString('hex');
     profileStore.set(storeKey, { profile, ts: Date.now() });
     for (const [k, v] of profileStore.entries()) {
       if (Date.now() - v.ts > 60 * 60 * 1000) profileStore.delete(k);
     }
-    // Also encode a compact version in URL for Render free tier spin-down resilience
-    const compact = {
-      name: profile.name,
-      handle: profile.handle,
-      initials: profile.initials,
-      profile_image: profile.profile_image,
-      followers: profile.followers,
-      following: profile.following,
-      tweet_count: profile.tweet_count,
-      avg_likes: profile.avg_likes,
-      avg_rt: profile.avg_rt,
-      avg_replies: profile.avg_replies,
-      avg_bookmarks: profile.avg_bookmarks,
-      posts_per_week: profile.posts_per_week,
-      premium_pct: profile.premium_pct,
-      biweekly_count: profile.biweekly_count,
-      impressions_14d: profile.impressions_14d,
-      is_eligible: profile.is_eligible,
-      eligibility_reasons: profile.eligibility_reasons,
-      is_verified: profile.is_verified,
-      days_since_last_post: profile.days_since_last_post,
-      impressions_90d: profile.impressions_90d,
-      sorsa_score: profile.sorsa_score,
-      sorsa_label: profile.sorsa_label,
-      projections: profile.projections,
-      biweekly_posts: profile.biweekly_posts,
-      payout_history: profile.payout_history,
-      current_month: profile.current_month,
-      current_year: profile.current_year
-    };
-    const profileB64 = Buffer.from(JSON.stringify(compact)).toString('base64url');
-    res.redirect('/?token=' + storeKey + '&profile=' + profileB64);
+    res.redirect('/?token=' + storeKey);
   } catch (err) {
     console.error('OAuth error:', err);
     res.redirect('/?error=token_exchange_failed');
   }
 });
+
+// Ping to keep server warm
+app.get('/api/ping', (req, res) => res.json({ ok: true, ts: Date.now() }));
 
 app.get('/api/profile/:token', (req, res) => {
   const entry = profileStore.get(req.params.token);

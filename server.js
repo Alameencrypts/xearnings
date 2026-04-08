@@ -34,6 +34,8 @@ app.get('/api/user/:handle', async (req, res) => {
     }
 
     const user = profileData.data;
+    // Log full user object to see all available fields
+    console.log('SociaVault user fields:', JSON.stringify(user));
     const followers = user.followers || 0;
 
     // Fetch recent tweets from SociaVault

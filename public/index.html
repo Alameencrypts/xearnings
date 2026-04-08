@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>XEarnings — Creator Revenue Calculator</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <style>
 :root{--bg:#080808;--s1:#0f0f0f;--s2:#141414;--b1:rgba(255,255,255,0.06);--b2:rgba(255,255,255,0.11);--t1:#efefef;--t2:#888;--t3:#444;--acc:#d4ff00;--acc2:rgba(212,255,0,0.1);--acc3:rgba(212,255,0,0.05);--grn:#00e676;--grn2:rgba(0,230,118,0.08);--grn3:rgba(0,230,118,0.18);--red:#ff4d4d;--red2:rgba(255,77,77,0.08);--r:12px;--r2:8px;}
 *{box-sizing:border-box;margin:0;padding:0;}
@@ -89,6 +90,8 @@ h1 .ya{color:var(--acc);}
 .elig-reasons{list-style:none;padding-left:28px;margin-top:6px;}
 .elig-reasons li{font-size:12px;color:rgba(255,100,100,0.9);display:flex;gap:6px;padding:1px 0;}
 .elig-reasons li::before{content:'×';font-weight:800;}
+.elig-box.ok .elig-reasons li::before{content:'';}
+.elig-box.ok .elig-reasons li{color:rgba(0,230,118,0.5);font-size:11px;}
 
 /* PAYOUT */
 .payout-card{background:var(--s1);border:1px solid var(--b2);border-radius:var(--r);padding:22px 26px;margin-bottom:22px;position:relative;overflow:hidden;}
@@ -112,6 +115,32 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:13px;heigh
 select{width:100%;background:var(--s2);border:1px solid var(--b2);border-radius:var(--r2);color:var(--t1);padding:9px 12px;font-family:'Manrope',sans-serif;font-size:12px;cursor:pointer;outline:none;appearance:none;font-weight:500;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%23555' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;}
 
 footer{margin-top:40px;padding-top:18px;border-top:1px solid var(--b1);display:flex;justify-content:space-between;font-size:11px;color:var(--t3);flex-wrap:wrap;gap:6px;}
+
+/* SHARE CARD */
+.share-wrap{margin-bottom:24px;display:none;}
+.share-card{background:#0f0f0f;border:1px solid rgba(212,255,0,0.3);border-radius:4px;padding:28px 28px 22px;position:relative;overflow:hidden;width:100%;max-width:600px;}
+.share-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,transparent,#d4ff00,transparent);}
+.share-card::after{content:'';position:absolute;bottom:-60px;right:-60px;width:200px;height:200px;background:radial-gradient(circle,rgba(212,255,0,0.08),transparent 70%);pointer-events:none;}
+.sc-header{display:flex;align-items:center;gap:14px;margin-bottom:20px;}
+.sc-av{width:54px;height:54px;border-radius:50%;border:2px solid rgba(212,255,0,0.4);overflow:hidden;display:flex;align-items:center;justify-content:center;background:var(--acc);font-family:'Bebas Neue',sans-serif;font-size:22px;color:#000;flex-shrink:0;}
+.sc-av img{width:100%;height:100%;object-fit:cover;}
+.sc-name{font-weight:800;font-size:17px;color:#efefef;}
+.sc-handle{font-size:12px;color:#888;margin-top:2px;}
+.sc-xlogo{margin-left:auto;opacity:.4;}
+.sc-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:20px;}
+.sc-stat{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:3px;padding:11px 12px;text-align:center;}
+.sc-stat-l{font-family:'DM Mono',monospace;font-size:9px;color:#555;text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px;}
+.sc-stat-v{font-family:'Bebas Neue',sans-serif;font-size:20px;color:#efefef;}
+.sc-payout{background:rgba(212,255,0,0.06);border:1px solid rgba(212,255,0,0.2);border-radius:3px;padding:16px 18px;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;}
+.sc-payout-l{font-family:'DM Mono',monospace;font-size:10px;color:#888;text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px;}
+.sc-payout-amt{font-family:'Bebas Neue',sans-serif;font-size:36px;color:#d4ff00;line-height:1;}
+.sc-payout-date{font-family:'DM Mono',monospace;font-size:10px;color:#666;margin-top:3px;}
+.sc-footer{display:flex;align-items:center;justify-content:space-between;}
+.sc-badge{display:inline-flex;align-items:center;gap:5px;font-family:'DM Mono',monospace;font-size:9px;color:#d4ff00;background:rgba(212,255,0,0.08);border:1px solid rgba(212,255,0,0.15);padding:4px 10px;border-radius:20px;}
+.sc-url{font-family:'DM Mono',monospace;font-size:9px;color:#444;}
+.share-btn{display:flex;align-items:center;gap:8px;background:var(--acc);color:#000;border:none;border-radius:var(--r2);padding:12px 22px;font-family:'Manrope',sans-serif;font-weight:800;font-size:13px;cursor:pointer;transition:opacity .15s;margin-top:14px;width:100%;justify-content:center;}
+.share-btn:hover{opacity:.88;}
+.share-btn svg{width:15px;height:15px;fill:#000;}
 footer a{color:var(--t2);text-decoration:none;}
 @keyframes fu{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
 .hero{animation:fu .4s ease;}
@@ -212,6 +241,46 @@ footer a{color:var(--t2);text-decoration:none;}
   <div class="payout-note">Based on your current engagement rate and posting frequency. X pays biweekly via Stripe — minimum <strong style="color:var(--t2);">$30</strong> to receive payment.</div>
 </div>
 
+<!-- SHARE CARD -->
+<div class="share-wrap" id="share-wrap">
+  <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--t3);letter-spacing:.07em;text-transform:uppercase;margin-bottom:12px;">Share your earnings card</div>
+  <div class="share-card" id="share-card">
+    <div class="sc-header">
+      <div class="sc-av" id="sc-av">—</div>
+      <div>
+        <div class="sc-name" id="sc-name">—</div>
+        <div class="sc-handle" id="sc-handle">—</div>
+      </div>
+      <div class="sc-xlogo">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="#efefef"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.748l7.73-8.835L1.254 2.25H8.08l4.253 5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+      </div>
+    </div>
+    <div class="sc-stats">
+      <div class="sc-stat"><div class="sc-stat-l">Followers</div><div class="sc-stat-v" id="sc-fol">—</div></div>
+      <div class="sc-stat"><div class="sc-stat-l">Posts/week</div><div class="sc-stat-v" id="sc-ppw">—</div></div>
+      <div class="sc-stat"><div class="sc-stat-l">Influence</div><div class="sc-stat-v" id="sc-infl2">—</div></div>
+    </div>
+    <div class="sc-payout">
+      <div>
+        <div class="sc-payout-l">Estimated next payout</div>
+        <div class="sc-payout-amt" id="sc-amt">$0.00</div>
+        <div class="sc-payout-date" id="sc-date">—</div>
+      </div>
+    </div>
+    <div class="sc-footer">
+      <div class="sc-badge">
+        <svg width="8" height="8" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.748l7.73-8.835L1.254 2.25H8.08l4.253 5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+        Jan 2026 Algorithm
+      </div>
+      <div class="sc-url">xearnings.onrender.com</div>
+    </div>
+  </div>
+  <button class="share-btn" onclick="downloadCard()" style="border-radius:4px;margin-top:12px;">
+    <svg viewBox="0 0 24 24" width="15" height="15" fill="#000"><path d="M12 16l-4-4h2.5V4h3v8H16l-4 4zm-6 4v-2h12v2H6z"/></svg>
+    Download & Share on X
+  </button>
+</div>
+
 <!-- MANUAL OVERRIDE -->
 <div class="manual-section" id="manual-section" style="display:none;">
   <div class="section-title">Adjust assumptions</div>
@@ -237,142 +306,4 @@ footer a{color:var(--t2);text-decoration:none;}
       </div>
     </div>
     <div>
-      <div class="sg"><div class="sl"><span class="sn">Premium followers %</span><span class="sv" id="lprem">10%</span></div>
-        <input type="range" id="s-prem" min="1" max="40" value="10" step="1" oninput="document.getElementById('lprem').textContent=this.value+'%';recalc()">
-      </div>
-      <div class="sg"><div class="sl"><span class="sn">Content type</span></div>
-        <select id="s-ctype" onchange="recalc()">
-          <option value="1.4">Video (native) — 1.4×</option>
-          <option value="1.2">Threads — 1.2×</option>
-          <option value="1.1">Images — 1.1×</option>
-          <option value="1.0" selected>Text — 1.0×</option>
-          <option value="0.7">Links — 0.7×</option>
-        </select>
-      </div>
-    </div>
-  </div>
-</div>
-
-<footer>
-  <span>XEarnings — estimates only. Algorithm: xai-org/x-algorithm · Jan 2026.</span>
-  <span><a href="https://github.com/xai-org/x-algorithm" target="_blank">Source</a> · <a href="https://developer.x.com" target="_blank">X Dev</a></span>
-</footer>
-</div>
-
-<script>
-const fmt=n=>n.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
-const fmtI=n=>Math.round(n).toLocaleString();
-const fmtM=n=>n>=1000000?(n/1000000).toFixed(1)+'M':n>=1000?(n/1000).toFixed(1)+'K':Math.round(n).toString();
-
-document.getElementById('nav-date').textContent=new Date().toLocaleString('en-US',{month:'long',year:'numeric'});
-
-let currentData=null;
-
-document.getElementById('handle-input').addEventListener('keydown',e=>{
-  if(e.key==='Enter') lookupHandle();
-});
-
-async function lookupHandle(){
-  const raw=document.getElementById('handle-input').value.trim().replace('@','');
-  if(!raw){return;}
-  const btn=document.getElementById('search-btn');
-  const err=document.getElementById('err-box');
-  btn.disabled=true;
-  btn.textContent='Loading...';
-  err.style.display='none';
-  document.getElementById('profile-card').style.display='none';
-  document.getElementById('payout-card').style.display='none';
-  document.getElementById('manual-section').style.display='none';
-
-  try{
-    const res=await fetch('/api/user/'+encodeURIComponent(raw));
-    const data=await res.json();
-    console.log('API response:', data);
-    if(!res.ok||data.error){
-      err.textContent=data.error||'Something went wrong.';
-      err.style.display='block';
-      return;
-    }
-    currentData=data;
-    renderProfile(data);
-  }catch(e){
-    console.error('Fetch error:',e);
-    err.textContent='Network error. Please try again.';
-    err.style.display='block';
-  }finally{
-    btn.disabled=false;
-    btn.textContent='Calculate';
-  }
-}
-
-function renderProfile(d){
-  // Avatar
-  const av=document.getElementById('p-av');
-  const imgUrl=d.profile_image?.image_url||d.profile_image||null;
-  if(imgUrl){av.innerHTML=`<img src="${imgUrl}" onerror="this.parentElement.textContent='${(d.name||'?')[0]}'">"`;}
-  else{av.textContent=(d.name||'?')[0];}
-
-  document.getElementById('p-name').textContent=d.name||'—';
-  document.getElementById('p-handle').textContent=d.handle||'—';
-  const vbadge=document.getElementById('p-verified');
-  vbadge.style.display=d.is_verified?'inline-flex':'none';
-
-  document.getElementById('s-fol').textContent=fmtM(d.followers||0);
-  document.getElementById('s-fing').textContent=fmtM(d.following||0);
-  document.getElementById('s-14d').textContent=d.posts_14d||0;
-  document.getElementById('s-ppw').textContent=d.posts_per_week||0;
-
-  // Scores
-  document.getElementById('sc-algo').textContent=fmtI(d.algo_score||0);
-  document.getElementById('algo-bar').style.width=Math.min((d.algo_score||0)/20000*100,100).toFixed(1)+'%';
-  document.getElementById('sc-infl').textContent=(d.influence_score||0).toLocaleString();
-  document.getElementById('infl-bar').style.width=((d.influence_score||0)/10).toFixed(1)+'%';
-  const lblEl=document.getElementById('infl-label');
-  lblEl.textContent=d.influence_label||'—';
-  const lblColors={Elite:'#f59e0b',Established:'#a78bfa',Growing:'#4ade80',Rising:'#60a5fa',New:'#888'};
-  lblEl.style.color=lblColors[d.influence_label]||'#888';
-
-  // Eligibility
-  const box=document.getElementById('elig-box');
-  const ic=document.getElementById('elig-ic');
-  const lbl=document.getElementById('elig-lbl');
-  const reasons=document.getElementById('elig-reasons');
-  if(d.is_eligible){
-    box.className='elig-box ok';ic.className='elig-ic ok';ic.textContent='✓';
-    lbl.className='elig-lbl ok';lbl.textContent='Eligible for Creator Revenue Sharing';
-    reasons.innerHTML='';
-  }else{
-    box.className='elig-box fail';ic.className='elig-ic fail';ic.textContent='×';
-    lbl.className='elig-lbl fail';lbl.textContent='Not eligible for Creator Revenue Sharing';
-    reasons.innerHTML=(d.eligibility_reasons||[]).map(r=>`<li>${r}</li>`).join('');
-  }
-
-  // Payout
-  document.getElementById('payout-amount').textContent='$'+fmt(d.biweekly_earnings||0);
-  document.getElementById('payout-date').textContent='Next payout: '+d.next_payout_date;
-
-  document.getElementById('profile-card').style.display='block';
-  document.getElementById('payout-card').style.display='block';
-  document.getElementById('manual-section').style.display='block';
-}
-
-function recalc(){
-  if(!currentData)return;
-  const cpm=+(document.getElementById('s-reg').value)||5;
-  const niche=+(document.getElementById('s-niche').value)||1;
-  const prem=+(document.getElementById('s-prem').value)/100||0.1;
-  const ctype=+(document.getElementById('s-ctype').value)||1;
-
-  const fol=currentData.followers||1000;
-  const score=currentData.algo_score||0;
-  const posts=currentData.posts_per_week||1;
-  const reach=fol*(0.04+(score/10000)*0.06)*ctype;
-  const mon=reach*prem;
-  const rpp=(mon/1000)*cpm*niche*0.525;
-  const biweekly=rpp*posts*2;
-
-  document.getElementById('payout-amount').textContent='$'+fmt(biweekly);
-}
-</script>
-</body>
-</html>
+      <div class="sg"><div class="sl"><span class="sn">Premium followers %</span><span class="sv" id="lprem">10%</

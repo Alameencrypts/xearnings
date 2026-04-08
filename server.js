@@ -34,14 +34,16 @@ app.get('/api/user/:handle', async (req, res) => {
 
     const u = profileData.data;
 
-    // Correct field names from SociaVault response
-    const followers = u.followers_count || u.followers || 0;
-    const following = u.friends_count || u.following_count || u.following || 0;
-    const tweetCount = u.statuses_count || u.tweet_count || u.tweets || 0;
-    const isVerified = !!(u.is_blue_verified || u.verified || u.is_verified);
-    const createdAt = u.core?.created_at || u.created_at || null;
-    const profileImage = u.profile_image_url_https || u.profile_image?.image_url || u.profile_image || u.avatar || null;
-    const name = u.name || handle;
+    // SociaVault nests real data inside legacy.* or directly
+    // From debug: followers_count:9544, fast_followers_count:5240, friends_count:349
+    const raw = u.legacy || u;
+    const followers = raw.followers_count || raw.fast_followers_count || u.followers_count || u.followers || 0;
+    const following = raw.friends_count || u.friends_count || u.following || 0;
+    const tweetCount = raw.statuses_count || u.statuses_count || u.tweet_count || u.tweets || 0;
+    const isVerified = !!(u.is_blue_verified || raw.verified || u.verified || u.is_verified);
+    const createdAt = raw.created_at || u.core?.created_at || u.created_at || null;
+    const profileImage = raw.profile_image_url_https || u.profile_image_url_https || u.profile_image?.image_url || u.profile_image || u.avatar || null;
+    const name = raw.name || u.name || handle;
 
     // Fetch recent tweets
     let allTweets = [];

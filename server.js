@@ -53,12 +53,20 @@ app.get('/api/user/:handle', async (req, res) => {
         { headers: { 'x-api-key': apiKey } }
       );
       const tweetsData = await tweetsRes.json();
+      console.log('Tweets response keys:', Object.keys(tweetsData));
+      console.log('Tweets success:', tweetsData.success);
+      console.log('Tweets data type:', typeof tweetsData.data, Array.isArray(tweetsData.data));
+      if (tweetsData.data) {
+        console.log('First tweet sample:', JSON.stringify(Array.isArray(tweetsData.data) ? tweetsData.data[0] : tweetsData.data).slice(0, 300));
+      }
       if (tweetsData.success && tweetsData.data) {
-        allTweets = Array.isArray(tweetsData.data) ? tweetsData.data : [];
+        allTweets = Array.isArray(tweetsData.data) ? tweetsData.data : 
+                    tweetsData.data.tweets || tweetsData.data.results || [];
       }
     } catch (e) {
       console.log('Tweets fetch failed:', e.message);
     }
+    console.log('Total tweets fetched:', allTweets.length);
 
     // Filter to last 14 days
     const fourteenDaysAgo = Date.now() - 14 * 24 * 60 * 60 * 1000;

@@ -60,28 +60,36 @@ app.get('/api/user/:handle', async (req, res) => {
         console.log('First tweet sample:', JSON.stringify(Array.isArray(tweetsData.data) ? tweetsData.data[0] : tweetsData.data).slice(0, 300));
       }
       if (tweetsData.success && tweetsData.data) {
-        allTweets = Array.isArray(tweetsData.data) ? tweetsData.data : 
-                    tweetsData.data.tweets || tweetsData.data.results || [];
+        // SociaVault returns tweets as object with numeric keys {"0": tweet, "1": tweet}
+        const raw = tweetsData.data.tweets || tweetsData.data;
+        if (Array.isArray(raw)) {
+          allTweets = raw;
+        } else if (typeof raw === 'object' && raw !== null) {
+          allTweets = Object.values(raw);
+        }
       }
     } catch (e) {
       console.log('Tweets fetch failed:', e.message);
     }
     console.log('Total tweets fetched:', allTweets.length);
 
-    // Filter to last 14 days
+    // Filter to last 14 days - dates in legacy.created_at
     const fourteenDaysAgo = Date.now() - 14 * 24 * 60 * 60 * 1000;
     const recentTweets = allTweets.filter(t => {
-      const d = new Date(t.created_at || t.date || 0);
-      return d.getTime() > fourteenDaysAgo;
+      const dateStr = t.legacy?.created_at || t.created_at || t.date || null;
+      if (!dateStr) return false;
+      return new Date(dateStr).getTime() > fourteenDaysAgo;
     });
 
-    // Averages from tweets
+    // Averages from tweets - SociaVault nests engagement in tweet.legacy
+    const getTweetVal = (t, ...keys) => {
+      const src = t.legacy || t;
+      for (const k of keys) if (src[k] != null) return src[k];
+      return 0;
+    };
     const avg = (arr, ...keys) => {
       if (!arr.length) return 0;
-      return Math.round(arr.reduce((s, t) => {
-        for (const k of keys) if (t[k]) return s + t[k];
-        return s;
-      }, 0) / arr.length);
+      return Math.round(arr.reduce((s, t) => s + getTweetVal(t, ...keys), 0) / arr.length);
     };
 
     const avgLikes = avg(allTweets, 'favorite_count', 'likes', 'like_count');
@@ -92,7 +100,7 @@ app.get('/api/user/:handle', async (req, res) => {
     // Posts per week
     let postsPerWeek = 7;
     if (allTweets.length >= 2) {
-      const dates = allTweets.map(t => new Date(t.created_at || t.date || 0)).filter(d => d > 0).sort((a, b) => b - a);
+      const dates = allTweets.map(t => new Date(t.legacy?.created_at || t.created_at || t.date || 0)).filter(d => d > 0).sort((a, b) => b - a);
       if (dates.length >= 2) {
         const weeks = Math.max((dates[0] - dates[dates.length - 1]) / (1000 * 60 * 60 * 24 * 7), 1);
         postsPerWeek = Math.round(allTweets.length / weeks);
@@ -123,7 +131,7 @@ app.get('/api/user/:handle', async (req, res) => {
     const accountAgeMs = createdAt ? Date.now() - new Date(createdAt).getTime() : 0;
     const ageScore = Math.min(accountAgeMs / (1000 * 60 * 60 * 24 * 1825), 1) * 150;
     const folScore = Math.min(Math.log10(Math.max(followers, 1)) / Math.log10(1000000), 1) * 200;
-    const engRate = allTweets.length > 0 ? allTweets.reduce((s, t) => s + (t.favorite_count||t.likes||0) + (t.retweet_count||t.retweets||0), 0) / allTweets.length / Math.max(followers, 1) : 0;
+    const engRate = allTweets.length > 0 ? allTweets.reduce((s, t) => s + getTweetVal(t,'favorite_count','likes') + getTweetVal(t,'retweet_count','retweets'), 0) / allTweets.length / Math.max(followers, 1) : 0;
     const engScore = Math.min(engRate / 0.05, 1) * 250;
     const algoScore = Math.min(score / 5000, 1) * 200;
     const consistencyScore = Math.min(postsPerWeek, 14) / 14 * 100;

@@ -287,6 +287,7 @@ async function lookupHandle(){
   try{
     const res=await fetch('/api/user/'+encodeURIComponent(raw));
     const data=await res.json();
+    console.log('API response:', data);
     if(!res.ok||data.error){
       err.textContent=data.error||'Something went wrong.';
       err.style.display='block';
@@ -295,6 +296,7 @@ async function lookupHandle(){
     currentData=data;
     renderProfile(data);
   }catch(e){
+    console.error('Fetch error:',e);
     err.textContent='Network error. Please try again.';
     err.style.display='block';
   }finally{
@@ -306,7 +308,8 @@ async function lookupHandle(){
 function renderProfile(d){
   // Avatar
   const av=document.getElementById('p-av');
-  if(d.profile_image){av.innerHTML=`<img src="${d.profile_image}" onerror="this.parentElement.textContent='${(d.name||'?')[0]}'">"`;}
+  const imgUrl=d.profile_image?.image_url||d.profile_image||null;
+  if(imgUrl){av.innerHTML=`<img src="${imgUrl}" onerror="this.parentElement.textContent='${(d.name||'?')[0]}'">"`;}
   else{av.textContent=(d.name||'?')[0];}
 
   document.getElementById('p-name').textContent=d.name||'—';
@@ -358,3 +361,18 @@ function recalc(){
   const cpm=+(document.getElementById('s-reg').value)||5;
   const niche=+(document.getElementById('s-niche').value)||1;
   const prem=+(document.getElementById('s-prem').value)/100||0.1;
+  const ctype=+(document.getElementById('s-ctype').value)||1;
+
+  const fol=currentData.followers||1000;
+  const score=currentData.algo_score||0;
+  const posts=currentData.posts_per_week||1;
+  const reach=fol*(0.04+(score/10000)*0.06)*ctype;
+  const mon=reach*prem;
+  const rpp=(mon/1000)*cpm*niche*0.525;
+  const biweekly=rpp*posts*2;
+
+  document.getElementById('payout-amount').textContent='$'+fmt(biweekly);
+}
+</script>
+</body>
+</html>

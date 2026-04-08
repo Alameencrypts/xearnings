@@ -30,7 +30,10 @@ app.get('/api/user/:handle', async (req, res) => {
     const userData = await userRes.json();
 
     if (userData.errors || !userData.data) {
-      return res.status(404).json({ error: 'User not found. Check the handle and try again.' });
+      console.log('X API error for handle:', handle);
+      console.log('Response:', JSON.stringify(userData));
+      const detail = userData.errors?.[0]?.detail || userData.title || userData.detail || 'User not found';
+      return res.status(404).json({ error: detail, raw: userData });
     }
 
     const user = userData.data;

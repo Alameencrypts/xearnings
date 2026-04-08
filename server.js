@@ -122,7 +122,7 @@ app.get('/api/user/:handle', async (req, res) => {
     res.json({
       name: user.name || handle,
       handle: '@' + (user.username || handle),
-      profile_image: user.profile_image || user.avatar || user.profile_image_url || null,
+      profile_image: user.profile_image?.image_url || user.profile_image || user.avatar || user.profile_image_url || null,
       followers,
       following: user.following || 0,
       tweet_count: user.tweets || user.tweet_count || 0,

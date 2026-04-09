@@ -48,10 +48,11 @@ app.get('/api/user/:handle', async (req, res) => {
     // Fetch recent tweets
     let allTweets = [];
     try {
-      const tweetsRes = await fetch(
-        `https://api.sociavault.com/v1/scrape/twitter/user-tweets-all?handle=${encodeURIComponent(handle)}&limit=50`,
-        { headers: { 'x-api-key': apiKey } }
-      );
+      const tweetsUrl = userId
+        ? `https://api.sociavault.com/v1/scrape/twitter/user-tweets-all?user_id=${userId}&limit=50`
+        : `https://api.sociavault.com/v1/scrape/twitter/user-tweets?handle=${encodeURIComponent(handle)}&limit=50`;
+      console.log('Fetching tweets from:', tweetsUrl);
+      const tweetsRes = await fetch(tweetsUrl, { headers: { 'x-api-key': apiKey } });
       const tweetsData = await tweetsRes.json();
       console.log('Tweets response keys:', Object.keys(tweetsData));
       console.log('Tweets success:', tweetsData.success);

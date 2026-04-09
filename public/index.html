@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>XEarnings — Creator Revenue Calculator</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <style>
 :root{--bg:#080808;--s1:#0f0f0f;--s2:#141414;--b1:rgba(255,255,255,0.06);--b2:rgba(255,255,255,0.11);--t1:#efefef;--t2:#888;--t3:#444;--acc:#d4ff00;--acc2:rgba(212,255,0,0.1);--grn:#00e676;--grn2:rgba(0,230,118,0.08);--grn3:rgba(0,230,118,0.18);--red:#ff4d4d;--red2:rgba(255,77,77,0.08);--r:12px;--r2:8px;}
 *{box-sizing:border-box;margin:0;padding:0;}
@@ -77,9 +78,6 @@ h1 .ya{color:var(--acc);}
 .payout-amount{font-family:'Bebas Neue',sans-serif;font-size:52px;color:var(--acc);line-height:1;}
 .payout-date{font-family:'DM Mono',monospace;font-size:12px;color:var(--t2);margin-top:6px;}
 .payout-note{font-size:11px;color:var(--t3);margin-top:10px;line-height:1.6;}
-input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:2px;background:var(--b2);border-radius:1px;outline:none;cursor:pointer;}
-input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:13px;height:13px;border-radius:50%;background:var(--acc);cursor:pointer;}
-select{width:100%;background:var(--s2);border:1px solid var(--b2);border-radius:var(--r2);color:var(--t1);padding:9px 12px;font-family:'Manrope',sans-serif;font-size:12px;cursor:pointer;outline:none;appearance:none;font-weight:500;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%23555' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;}
 .share-section{margin-bottom:24px;display:none;}
 .share-label{font-family:'DM Mono',monospace;font-size:10px;color:var(--t3);letter-spacing:.07em;text-transform:uppercase;margin-bottom:12px;}
 .share-card{background:#050a05;border:1px solid rgba(212,255,0,0.25);border-radius:4px;padding:26px;position:relative;overflow:hidden;width:100%;display:flex;align-items:center;justify-content:space-between;gap:20px;min-height:190px;}
@@ -109,11 +107,20 @@ select{width:100%;background:var(--s2);border:1px solid var(--b2);border-radius:
 .dl-btn{display:flex;align-items:center;justify-content:center;gap:8px;background:var(--acc);color:#000;border:none;border-radius:4px;padding:13px 22px;font-family:'Manrope',sans-serif;font-weight:800;font-size:14px;cursor:pointer;width:100%;margin-top:12px;transition:opacity .15s;}
 .dl-btn:hover{opacity:.88;}
 .dl-btn:disabled{opacity:.5;cursor:not-allowed;}
+.manual-section{background:var(--s1);border:1px solid var(--b1);border-radius:var(--r);padding:22px 26px;margin-bottom:22px;display:none;}
+.section-title{font-family:'DM Mono',monospace;font-size:10px;color:var(--t2);letter-spacing:.06em;text-transform:uppercase;margin-bottom:18px;}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+.sg{margin-bottom:16px;}
+.sl{display:flex;justify-content:space-between;margin-bottom:7px;}
+.sn{font-size:12px;color:var(--t2);font-weight:500;}
+.sv{font-family:'DM Mono',monospace;font-size:12px;color:var(--t1);}
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:2px;background:var(--b2);border-radius:1px;outline:none;cursor:pointer;}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:13px;height:13px;border-radius:50%;background:var(--acc);cursor:pointer;}
+select{width:100%;background:var(--s2);border:1px solid var(--b2);border-radius:var(--r2);color:var(--t1);padding:9px 12px;font-family:'Manrope',sans-serif;font-size:12px;cursor:pointer;outline:none;appearance:none;font-weight:500;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%23555' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;}
 footer{margin-top:40px;padding-top:18px;border-top:1px solid var(--b1);display:flex;justify-content:space-between;font-size:11px;color:var(--t3);flex-wrap:wrap;gap:6px;}
 footer a{color:var(--t2);text-decoration:none;}
 @media(max-width:600px){.scores-grid{grid-template-columns:1fr;}.grid2{grid-template-columns:1fr;}h1{font-size:54px;}}
 </style>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 </head>
 <body>
 <div class="pg">
@@ -216,14 +223,15 @@ footer a{color:var(--t2);text-decoration:none;}
     Download and Share on X
   </button>
 </div>
-
+<div class="manual-section" id="manual-section">
+  <div class="section-title">Adjust assumptions</div>
   <div class="grid2">
     <div>
       <div class="sg"><div class="sl"><span class="sn">Region CPM</span></div>
         <select id="s-reg">
           <option value="12">US / Canada $12</option>
           <option value="9">UK / Europe $9</option>
-          <option value="5" selected>Global $5</option>
+          <option value="6" selected>Global $6</option>
           <option value="2">W. Africa / S. Asia $2</option>
         </select>
       </div>
@@ -239,8 +247,8 @@ footer a{color:var(--t2);text-decoration:none;}
       </div>
     </div>
     <div>
-      <div class="sg"><div class="sl"><span class="sn">Premium followers %</span><span class="sv" id="lprem">10%</span></div>
-        <input type="range" id="s-prem" min="1" max="40" value="10" step="1">
+      <div class="sg"><div class="sl"><span class="sn">Premium followers %</span><span class="sv" id="lprem">15%</span></div>
+        <input type="range" id="s-prem" min="1" max="40" value="15" step="1">
       </div>
       <div class="sg"><div class="sl"><span class="sn">Content type</span></div>
         <select id="s-ctype">
@@ -266,6 +274,10 @@ var currentData=null;
 document.getElementById('nav-date').textContent=new Date().toLocaleString('en-US',{month:'long',year:'numeric'});
 document.getElementById('search-btn').addEventListener('click',doCalculate);
 document.getElementById('handle-input').addEventListener('keydown',function(e){if(e.key==='Enter')doCalculate();});
+document.getElementById('s-reg').addEventListener('change',recalc);
+document.getElementById('s-niche').addEventListener('change',recalc);
+document.getElementById('s-ctype').addEventListener('change',recalc);
+document.getElementById('s-prem').addEventListener('input',function(){document.getElementById('lprem').textContent=this.value+'%';recalc();});
 function doCalculate(){
   var raw=document.getElementById('handle-input').value.trim().replace('@','');
   if(!raw)return;
@@ -275,6 +287,7 @@ function doCalculate(){
   err.style.display='none';
   document.getElementById('profile-card').style.display='none';
   document.getElementById('payout-card').style.display='none';
+  document.getElementById('share-section').style.display='none';
   document.getElementById('manual-section').style.display='none';
   fetch('/api/user/'+encodeURIComponent(raw))
     .then(function(r){return r.json();})
@@ -322,9 +335,11 @@ function renderProfile(d){
   }
   document.getElementById('payout-amount').textContent='$'+fmt(d.biweekly_earnings||0);
   document.getElementById('payout-date').textContent='Next payout: '+(d.next_payout_date||'-');
+  renderShareCard(d);
   document.getElementById('profile-card').style.display='block';
   document.getElementById('payout-card').style.display='block';
-  renderShareCard(d);
+  document.getElementById('share-section').style.display='block';
+  document.getElementById('manual-section').style.display='block';
 }
 function renderShareCard(d){
   var imgUrl=d.profile_image&&typeof d.profile_image==='object'?d.profile_image.image_url:d.profile_image;
@@ -337,7 +352,25 @@ function renderShareCard(d){
   document.getElementById('sc-score').textContent=fmtM(d.algo_score||0);
   document.getElementById('sc-infl2').textContent=(d.influence_score||0).toLocaleString();
   document.getElementById('sc-htag').textContent=d.handle||'-';
-  document.getElementById('share-section').style.display='block';
+}
+function recalc(){
+  if(!currentData)return;
+  var cpm=+(document.getElementById('s-reg').value)||6;
+  var niche=+(document.getElementById('s-niche').value)||1;
+  var prem=+(document.getElementById('s-prem').value)/100||0.15;
+  var ctype=+(document.getElementById('s-ctype').value)||1;
+  var fol=currentData.followers||1000;
+  var score=currentData.algo_score||0;
+  var posts=currentData.posts_per_week||1;
+  var avgLikes=currentData.avg_likes||0;
+  var avgRt=currentData.avg_rt||0;
+  var avgRep=currentData.avg_replies||0;
+  var engRate=fol>0?(avgLikes+avgRt+avgRep)/fol:0;
+  var viralMult=1+Math.min(engRate*20,3);
+  var reach=fol*(0.04+(score/10000)*0.08)*ctype*viralMult*1.4;
+  var biweekly=(reach*prem/1000)*cpm*niche*0.525*posts*2;
+  document.getElementById('payout-amount').textContent='$'+fmt(biweekly);
+  document.getElementById('sc-amt').textContent='$'+fmt(biweekly);
 }
 document.getElementById('dl-btn').addEventListener('click',function(){
   var btn=document.getElementById('dl-btn');

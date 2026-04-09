@@ -63,15 +63,18 @@ app.get('/api/user/:handle', async (req, res) => {
         console.log('First tweet sample:', JSON.stringify(Array.isArray(tweetsData.data) ? tweetsData.data[0] : tweetsData.data).slice(0, 300));
       }
       if (tweetsData.success && tweetsData.data) {
-        // Try all possible response structures
         let raw = tweetsData.data;
-        if (raw.tweets) raw = raw.tweets;
-        else if (raw.results) raw = raw.results;
-        
-        if (Array.isArray(raw)) {
+        // Search endpoint returns {tweets: [...]} or array directly
+        if (raw.tweets && Array.isArray(raw.tweets)) {
+          allTweets = raw.tweets;
+        } else if (Array.isArray(raw)) {
           allTweets = raw;
         } else if (typeof raw === 'object' && raw !== null) {
-          allTweets = Object.values(raw).filter(v => typeof v === 'object' && v !== null);
+          // Filter out cursor objects, keep only tweet objects
+          allTweets = Object.values(raw).filter(v => 
+            typeof v === 'object' && v !== null && 
+            (v.legacy || v.created_at || v.full_text || v.text || v.rest_id)
+          );
         }
         console.log('Parsed tweets count:', allTweets.length);
         if (allTweets.length > 0) {

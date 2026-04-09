@@ -105,7 +105,7 @@ footer a{color:var(--t2);text-decoration:none;}
 <div class="hero">
   <div class="hero-tag">Creator revenue calculator</div>
   <h1>HOW MUCH IS YOUR<br>CONTENT <span class="ya">WORTH?</span></h1>
-  <p class="hero-sub">Enter any X handle to see follower stats, 14-day post count, and estimated next payout — built on X's open-sourced Grok algorithm.</p>
+  <p class="hero-sub">Enter any X handle to see follower stats, algorithm score, and estimated next payout — built on X's open-sourced Grok algorithm.</p>
 </div>
 <div class="search-wrap">
   <div class="search-box">
@@ -129,11 +129,9 @@ footer a{color:var(--t2);text-decoration:none;}
         </div>
       </div>
     </div>
-    <div class="stats-grid">
+    <div class="stats-grid" style="grid-template-columns:repeat(2,1fr);max-width:400px;">
       <div class="stat"><div class="stat-l">Followers</div><div class="stat-v" id="s-fol">-</div></div>
       <div class="stat"><div class="stat-l">Following</div><div class="stat-v" id="s-fing">-</div></div>
-      <div class="stat"><div class="stat-l">Posts 14d (est.)</div><div class="stat-v acc" id="s-14d">-</div></div>
-      <div class="stat"><div class="stat-l">Posts/wk (est.)</div><div class="stat-v" id="s-ppw">-</div></div>
     </div>
     <div class="scores-grid">
       <div class="score-card algo">

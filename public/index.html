@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+l<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -279,14 +279,19 @@ function renderProfile(d){
 }
 function recalc(){
   if(!currentData)return;
-  var cpm=+(document.getElementById('s-reg').value)||5;
+  var cpm=+(document.getElementById('s-reg').value)||6;
   var niche=+(document.getElementById('s-niche').value)||1;
-  var prem=+(document.getElementById('s-prem').value)/100||0.1;
+  var prem=+(document.getElementById('s-prem').value)/100||0.15;
   var ctype=+(document.getElementById('s-ctype').value)||1;
   var fol=currentData.followers||1000;
   var score=currentData.algo_score||0;
   var posts=currentData.posts_per_week||1;
-  var reach=fol*(0.04+(score/10000)*0.06)*ctype;
+  var avgLikes=currentData.avg_likes||0;
+  var avgRt=currentData.avg_rt||0;
+  var avgRep=currentData.avg_replies||0;
+  var engRate=fol>0?(avgLikes+avgRt+avgRep)/fol:0;
+  var viralMult=1+Math.min(engRate*20,3);
+  var reach=fol*(0.04+(score/10000)*0.08)*ctype*viralMult*1.4;
   var biweekly=(reach*prem/1000)*cpm*niche*0.525*posts*2;
   document.getElementById('payout-amount').textContent='$'+fmt(biweekly);
 }

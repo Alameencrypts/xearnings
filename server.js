@@ -49,9 +49,10 @@ app.get('/api/user/:handle', async (req, res) => {
     let allTweets = [];
     let userId = null;
     try {
-      const tweetsUrl = userId
-        ? `https://api.sociavault.com/v1/scrape/twitter/user-tweets-all?user_id=${userId}&limit=50`
-        : `https://api.sociavault.com/v1/scrape/twitter/user-tweets?handle=${encodeURIComponent(handle)}&limit=50`;
+      // Use search to get recent tweets from last 90 days
+      const since = new Date(Date.now() - 90 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+      const searchQuery = encodeURIComponent(`from:${handle} since:${since}`);
+      const tweetsUrl = `https://api.sociavault.com/v1/scrape/twitter/search?query=${searchQuery}&limit=50`;
       console.log('Fetching tweets from:', tweetsUrl);
       const tweetsRes = await fetch(tweetsUrl, { headers: { 'x-api-key': apiKey } });
       const tweetsData = await tweetsRes.json();

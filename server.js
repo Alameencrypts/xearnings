@@ -47,6 +47,7 @@ app.get('/api/user/:handle', async (req, res) => {
 
     // Fetch recent tweets
     let allTweets = [];
+    let userId = null;
     try {
       const tweetsUrl = userId
         ? `https://api.sociavault.com/v1/scrape/twitter/user-tweets-all?user_id=${userId}&limit=50`

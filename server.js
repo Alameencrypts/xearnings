@@ -1,136 +1,173 @@
+require('dotenv').config();
+const express = require('express');
+const fetch = require('node-fetch');
+const path = require('path');
 
-var fmt = function(n){ return n.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}); };
-var fmtM = function(n){ return n>=1000000?(n/1000000).toFixed(1)+'M':n>=1000?(n/1000).toFixed(1)+'K':String(Math.round(n)); };
-var currentData = null;
+const app = express();
+app.use(express.json());
+app.set('trust proxy', 1);
+app.use(express.static(path.join(__dirname, 'public')));
 
-document.getElementById('nav-date').textContent = new Date().toLocaleString('en-US',{month:'long',year:'numeric'});
-
-document.getElementById('search-btn').addEventListener('click', doCalculate);
-document.getElementById('handle-input').addEventListener('keydown', function(e){ if(e.key==='Enter') doCalculate(); });
-document.getElementById('s-reg').addEventListener('change', recalc);
-document.getElementById('s-niche').addEventListener('change', recalc);
-document.getElementById('s-ctype').addEventListener('change', recalc);
-document.getElementById('s-prem').addEventListener('input', function(){ document.getElementById('lprem').textContent=this.value+'%'; recalc(); });
-
-function doCalculate() {
-  var raw = document.getElementById('handle-input').value.trim().replace('@','');
-  if (!raw) return;
-  var btn = document.getElementById('search-btn');
-  var err = document.getElementById('err-box');
-  btn.disabled = true;
-  btn.textContent = 'Loading...';
-  err.style.display = 'none';
-  document.getElementById('profile-card').style.display = 'none';
-  document.getElementById('payout-card').style.display = 'none';
-  document.getElementById('manual-section').style.display = 'none';
-  fetch('/api/user/' + encodeURIComponent(raw))
-    .then(function(r){ return r.json(); })
-    .then(function(data){
-      if (data.error){ err.textContent=data.error; err.style.display='block'; }
-      else { currentData=data; renderProfile(data); }
-    })
-    .catch(function(){ err.textContent='Network error. Please try again.'; err.style.display='block'; })
-    .finally(function(){ btn.disabled=false; btn.textContent='Calculate'; });
-}
-
-function renderProfile(d) {
-  var av = document.getElementById('p-av');
-  var imgUrl = d.profile_image && typeof d.profile_image === 'object' ? d.profile_image.image_url : d.profile_image;
-  if (imgUrl) {
-    var img = new Image();
-    img.onload = function(){ av.innerHTML=''; av.appendChild(img); };
-    img.onerror = function(){ av.textContent=(d.name||'?')[0]; };
-    img.src = imgUrl;
-    img.style.cssText = 'width:100%;height:100%;object-fit:cover;';
-  } else { av.textContent=(d.name||'?')[0]; }
-
-  document.getElementById('p-name').textContent = d.name||'—';
-  document.getElementById('p-handle').textContent = d.handle||'—';
-  document.getElementById('p-verified').style.display = d.is_verified ? 'inline-flex' : 'none';
-  document.getElementById('s-fol').textContent = fmtM(d.followers||0);
-  document.getElementById('s-fing').textContent = fmtM(d.following||0);
-  document.getElementById('s-14d').textContent = d.posts_14d||0;
-  document.getElementById('s-ppw').textContent = d.posts_per_week||0;
-  document.getElementById('sc-algo').textContent = Math.round(d.algo_score||0).toLocaleString();
-  document.getElementById('algo-bar').style.width = Math.min((d.algo_score||0)/20000*100,100)+'%';
-  document.getElementById('sc-infl').textContent = (d.influence_score||0).toLocaleString();
-  document.getElementById('infl-bar').style.width = ((d.influence_score||0)/10)+'%';
-  var lblEl = document.getElementById('infl-label');
-  lblEl.textContent = d.influence_label||'—';
-  var lblColors = {Elite:'#f59e0b',Established:'#a78bfa',Growing:'#4ade80',Rising:'#60a5fa',New:'#888'};
-  lblEl.style.color = lblColors[d.influence_label]||'#888';
-
-  var box = document.getElementById('elig-box');
-  var ic = document.getElementById('elig-ic');
-  var lbl = document.getElementById('elig-lbl');
-  var note = document.getElementById('elig-note');
-  var reasons = document.getElementById('elig-reasons');
-  box.style.display = 'block';
-  if (d.is_eligible) {
-    box.className='elig-box ok'; ic.className='elig-ic ok'; ic.textContent='✓';
-    lbl.className='elig-lbl ok'; lbl.textContent='Eligible for Creator Revenue Sharing';
-    note.style.display='block'; note.textContent='X may pause monetization for policy violations, account review, or other reasons not visible via API.';
-    reasons.innerHTML='';
-  } else {
-    box.className='elig-box fail'; ic.className='elig-ic fail'; ic.textContent='x';
-    lbl.className='elig-lbl fail'; lbl.textContent='Not eligible for Creator Revenue Sharing';
-    note.style.display='none';
-    reasons.innerHTML=(d.eligibility_reasons||[]).map(function(r){return '<li>'+r+'</li>';}).join('');
-  }
-
-  document.getElementById('payout-amount').textContent='$'+fmt(d.biweekly_earnings||0);
-  document.getElementById('payout-date').textContent='Next payout: '+(d.next_payout_date||'—');
-  document.getElementById('profile-card').style.display='block';
-  document.getElementById('payout-card').style.display='block';
-  document.getElementById('manual-section').style.display='block';
-  renderShareCard(d);
-}
-
-function renderShareCard(d) {
-  var imgUrl = d.profile_image && typeof d.profile_image === 'object' ? d.profile_image.image_url : d.profile_image;
-  var scAv = document.getElementById('sc-av');
-  if (imgUrl) {
-    var img = new Image();
-    img.onload = function(){ scAv.innerHTML=''; scAv.appendChild(img); };
-    img.onerror = function(){ scAv.textContent=(d.name||'?')[0]; };
-    img.src = imgUrl;
-    img.style.cssText='width:100%;height:100%;object-fit:cover;';
-  } else { scAv.textContent=(d.name||'?')[0]; }
-  document.getElementById('sc-amt').textContent='$'+fmt(d.biweekly_earnings||0);
-  document.getElementById('sc-date').textContent='Next: '+(d.next_payout_date||'—');
-  document.getElementById('sc-fol').textContent=fmtM(d.followers||0);
-  document.getElementById('sc-ppw').textContent=d.posts_per_week||'—';
-  document.getElementById('sc-infl2').textContent=(d.influence_score||0).toLocaleString();
-  document.getElementById('sc-handle').textContent=d.handle||'—';
-  document.getElementById('share-section').style.display='block';
-}
-
-document.getElementById('dl-btn').addEventListener('click', function() {
-  var btn = document.getElementById('dl-btn');
-  btn.disabled=true; btn.textContent='Generating...';
-  var card = document.getElementById('share-card');
-  html2canvas(card,{scale:2,backgroundColor:'#050a05',useCORS:true,allowTaint:true,logging:false})
-    .then(function(canvas){
-      var link=document.createElement('a');
-      var handle=(document.getElementById('sc-handle').textContent||'card').replace('@','');
-      link.download='xearnings-'+handle+'.png';
-      link.href=canvas.toDataURL('image/png');
-      link.click();
-    })
-    .catch(function(){ alert('Download failed. Please try again.'); })
-    .finally(function(){ btn.disabled=false; btn.innerHTML='<svg viewBox="0 0 24 24" width="16" height="16" fill="#000"><path d="M12 16l-4-4h2.5V4h3v8H16l-4 4zm-6 4v-2h12v2H6z"/></svg> Download and Share on X'; });
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-function recalc() {
-  if (!currentData) return;
-  var cpm=+(document.getElementById('s-reg').value)||5;
-  var niche=+(document.getElementById('s-niche').value)||1;
-  var prem=+(document.getElementById('s-prem').value)/100||0.1;
-  var ctype=+(document.getElementById('s-ctype').value)||1;
-  var fol=currentData.followers||1000;
-  var score=currentData.algo_score||0;
-  var posts=currentData.posts_per_week||1;
-  var reach=fol*(0.04+(score/10000)*0.06)*ctype;
-  var biweekly=(reach*prem/1000)*cpm*niche*0.525*posts*2;
-  document.getElementById('payout-amount').textContent='$'+fmt(biweekly);
-}
+app.get('/api/ping', (req, res) => res.json({ ok: true }));
+
+app.get('/api/user/:handle', async (req, res) => {
+  const handle = req.params.handle.replace('@', '').trim();
+
+  try {
+    const apiKey = process.env.SOCIAVAULT_API_KEY;
+    if (!apiKey) return res.status(500).json({ error: 'SOCIAVAULT_API_KEY not configured' });
+
+    const profileRes = await fetch(
+      `https://api.sociavault.com/v1/scrape/twitter/profile?handle=${encodeURIComponent(handle)}`,
+      { headers: { 'x-api-key': apiKey } }
+    );
+
+    const profileData = await profileRes.json();
+
+    if (!profileRes.ok || !profileData.success || !profileData.data) {
+      return res.status(404).json({ error: profileData.message || 'User not found' });
+    }
+
+    const u = profileData.data;
+
+    // SociaVault nests real data inside legacy.* or directly
+    // From debug: followers_count:9544, fast_followers_count:5240, friends_count:349
+    const raw = u.legacy || u;
+    const followers = raw.followers_count || raw.fast_followers_count || u.followers_count || u.followers || 0;
+    const following = raw.friends_count || u.friends_count || u.following || 0;
+    const tweetCount = raw.statuses_count || u.statuses_count || u.tweet_count || u.tweets || 0;
+    const isVerified = !!(u.is_blue_verified || raw.verified || u.verified || u.is_verified);
+    const createdAt = raw.created_at || u.core?.created_at || u.created_at || null;
+    const profileImage = raw.profile_image_url_https || u.profile_image_url_https || u.profile_image?.image_url || u.profile_image || u.avatar || null;
+    const name = raw.name || u.name || handle;
+
+    // Fetch recent tweets
+    let allTweets = [];
+    try {
+      const tweetsRes = await fetch(
+        `https://api.sociavault.com/v1/scrape/twitter/user-tweets?handle=${encodeURIComponent(handle)}&limit=50`,
+        { headers: { 'x-api-key': apiKey } }
+      );
+      const tweetsData = await tweetsRes.json();
+      console.log('Tweets response keys:', Object.keys(tweetsData));
+      console.log('Tweets success:', tweetsData.success);
+      console.log('Tweets data type:', typeof tweetsData.data, Array.isArray(tweetsData.data));
+      if (tweetsData.data) {
+        console.log('First tweet sample:', JSON.stringify(Array.isArray(tweetsData.data) ? tweetsData.data[0] : tweetsData.data).slice(0, 300));
+      }
+      if (tweetsData.success && tweetsData.data) {
+        // SociaVault returns tweets as object with numeric keys {"0": tweet, "1": tweet}
+        const raw = tweetsData.data.tweets || tweetsData.data;
+        if (Array.isArray(raw)) {
+          allTweets = raw;
+        } else if (typeof raw === 'object' && raw !== null) {
+          allTweets = Object.values(raw);
+        }
+      }
+    } catch (e) {
+      console.log('Tweets fetch failed:', e.message);
+    }
+    console.log('Total tweets fetched:', allTweets.length);
+
+    // Filter to last 14 days - dates in legacy.created_at
+    const fourteenDaysAgo = Date.now() - 14 * 24 * 60 * 60 * 1000;
+    const recentTweets = allTweets.filter(t => {
+      const dateStr = t.legacy?.created_at || t.created_at || t.date || null;
+      if (!dateStr) return false;
+      return new Date(dateStr).getTime() > fourteenDaysAgo;
+    });
+
+    // Averages from tweets - SociaVault nests engagement in tweet.legacy
+    const getTweetVal = (t, ...keys) => {
+      const src = t.legacy || t;
+      for (const k of keys) if (src[k] != null) return src[k];
+      return 0;
+    };
+    const avg = (arr, ...keys) => {
+      if (!arr.length) return 0;
+      return Math.round(arr.reduce((s, t) => s + getTweetVal(t, ...keys), 0) / arr.length);
+    };
+
+    const avgLikes = avg(allTweets, 'favorite_count', 'likes', 'like_count');
+    const avgRt = avg(allTweets, 'retweet_count', 'retweets');
+    const avgRep = avg(allTweets, 'reply_count', 'replies');
+    const avgBm = avg(allTweets, 'bookmark_count', 'bookmarks');
+
+    // Posts per week
+    let postsPerWeek = 7;
+    if (allTweets.length >= 2) {
+      const dates = allTweets.map(t => new Date(t.legacy?.created_at || t.created_at || t.date || 0)).filter(d => d > 0).sort((a, b) => b - a);
+      if (dates.length >= 2) {
+        const weeks = Math.max((dates[0] - dates[dates.length - 1]) / (1000 * 60 * 60 * 24 * 7), 1);
+        postsPerWeek = Math.round(allTweets.length / weeks);
+      }
+    }
+
+    // Earnings
+    const premPct = 0.10;
+    const cpm = 5;
+    const score = avgLikes * 1 + avgRt * 20 + avgRep * 13.5 + avgBm * 10;
+    const reach = followers * (0.04 + (score / 10000) * 0.06);
+    const weeklyEarnings = (reach * premPct / 1000) * cpm * 0.525 * postsPerWeek;
+    const biweeklyEarnings = weeklyEarnings * 2;
+
+    // Next payout date
+    const anchor = new Date('2026-04-10');
+    let nextPayout = new Date(anchor);
+    const now = new Date();
+    while (nextPayout <= now) nextPayout = new Date(nextPayout.getTime() + 14 * 24 * 60 * 60 * 1000);
+    const nextPayoutDate = nextPayout.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+
+    // Eligibility
+    const eligibilityReasons = [];
+    if (!isVerified) eligibilityReasons.push('Not X Premium verified');
+    if (followers < 500) eligibilityReasons.push(`Need 500+ followers (${followers.toLocaleString()} now)`);
+
+    // Influence score
+    const accountAgeMs = createdAt ? Date.now() - new Date(createdAt).getTime() : 0;
+    const ageScore = Math.min(accountAgeMs / (1000 * 60 * 60 * 24 * 1825), 1) * 150;
+    const folScore = Math.min(Math.log10(Math.max(followers, 1)) / Math.log10(1000000), 1) * 200;
+    const engRate = allTweets.length > 0 ? allTweets.reduce((s, t) => s + getTweetVal(t,'favorite_count','likes') + getTweetVal(t,'retweet_count','retweets'), 0) / allTweets.length / Math.max(followers, 1) : 0;
+    const engScore = Math.min(engRate / 0.05, 1) * 250;
+    const algoScore = Math.min(score / 5000, 1) * 200;
+    const consistencyScore = Math.min(postsPerWeek, 14) / 14 * 100;
+    const vBonus = isVerified ? 100 : 0;
+    const influenceScore = Math.round(Math.min(ageScore + folScore + engScore + algoScore + consistencyScore + vBonus, 1000));
+    const influenceLabel = influenceScore >= 800 ? 'Elite' : influenceScore >= 600 ? 'Established' : influenceScore >= 400 ? 'Growing' : influenceScore >= 200 ? 'Rising' : 'New';
+
+    res.json({
+      name,
+      handle: '@' + (u.screen_name || handle),
+      profile_image: profileImage,
+      followers,
+      following,
+      tweet_count: tweetCount,
+      posts_14d: recentTweets.length,
+      posts_per_week: postsPerWeek,
+      avg_likes: avgLikes,
+      avg_rt: avgRt,
+      avg_replies: avgRep,
+      algo_score: Math.round(score),
+      influence_score: influenceScore,
+      influence_label: influenceLabel,
+      weekly_earnings: parseFloat(weeklyEarnings.toFixed(4)),
+      biweekly_earnings: parseFloat(biweeklyEarnings.toFixed(4)),
+      next_payout_date: nextPayoutDate,
+      next_payout_amount: parseFloat(biweeklyEarnings.toFixed(2)),
+      is_eligible: isVerified && followers >= 500,
+      eligibility_reasons: eligibilityReasons,
+      is_verified: isVerified
+    });
+
+  } catch (err) {
+    console.error('Error:', err);
+    res.status(500).json({ error: 'Something went wrong: ' + err.message });
+  }
+});
+
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => console.log(`XEarnings → http://localhost:${PORT}`));

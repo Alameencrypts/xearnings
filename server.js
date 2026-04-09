@@ -137,12 +137,22 @@ app.get('/api/user/:handle', async (req, res) => {
       posts14d = Math.round(postsPerWeek * 2);
     }
 
-    // Earnings
-    const premPct = 0.10;
-    const cpm = 5;
+    // Earnings — improved formula
+    const premPct = 0.15; // 15% premium followers (realistic average)
+    const cpm = 6; // $6 CPM (more accurate for engaged audiences)
     const score = avgLikes * 1 + avgRt * 20 + avgRep * 13.5 + avgBm * 10;
-    const reach = followers * (0.04 + (score / 10000) * 0.06);
-    const weeklyEarnings = (reach * premPct / 1000) * cpm * 0.525 * postsPerWeek;
+    
+    // Reach: followers x base reach% + viral multiplier from engagement
+    const engagementRate = followers > 0 ? (avgLikes + avgRt + avgRep) / followers : 0;
+    const viralMultiplier = 1 + Math.min(engagementRate * 20, 3); // up to 4x for viral content
+    const baseReach = followers * (0.04 + (score / 10000) * 0.08);
+    const reach = baseReach * viralMultiplier;
+    
+    // Reply thread impressions add ~40% more monetizable impressions
+    const totalMonetizableReach = reach * 1.4;
+    
+    const revenuePerPost = (totalMonetizableReach * premPct / 1000) * cpm * 0.525;
+    const weeklyEarnings = revenuePerPost * postsPerWeek;
     const biweeklyEarnings = weeklyEarnings * 2;
 
     // Next payout date

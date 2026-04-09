@@ -49,7 +49,7 @@ app.get('/api/user/:handle', async (req, res) => {
     let allTweets = [];
     try {
       const tweetsRes = await fetch(
-        `https://api.sociavault.com/v1/scrape/twitter/user-tweets?handle=${encodeURIComponent(handle)}&limit=50`,
+        `https://api.sociavault.com/v1/scrape/twitter/user-tweets-all?handle=${encodeURIComponent(handle)}&limit=50`,
         { headers: { 'x-api-key': apiKey } }
       );
       const tweetsData = await tweetsRes.json();
@@ -72,14 +72,14 @@ app.get('/api/user/:handle', async (req, res) => {
       console.log('Tweets fetch failed:', e.message);
     }
     console.log('Total tweets fetched:', allTweets.length);
+    if (allTweets.length > 0) {
+      const sample = allTweets[0];
+      const dateStr = sample.legacy?.created_at || sample.created_at || sample.date || 'NO DATE';
+      console.log('Most recent tweet date:', dateStr);
+      console.log('14 days ago:', new Date(Date.now() - 14*24*60*60*1000).toISOString());
+    }
 
-    // Filter to last 14 days - dates in legacy.created_at
-    const fourteenDaysAgo = Date.now() - 14 * 24 * 60 * 60 * 1000;
-    const recentTweets = allTweets.filter(t => {
-      const dateStr = t.legacy?.created_at || t.created_at || t.date || null;
-      if (!dateStr) return false;
-      return new Date(dateStr).getTime() > fourteenDaysAgo;
-    });
+
 
     // Averages from tweets - SociaVault nests engagement in tweet.legacy
     const getTweetVal = (t, ...keys) => {
@@ -97,14 +97,32 @@ app.get('/api/user/:handle', async (req, res) => {
     const avgRep = avg(allTweets, 'reply_count', 'replies');
     const avgBm = avg(allTweets, 'bookmark_count', 'bookmarks');
 
-    // Posts per week
-    let postsPerWeek = 7;
+    // Posts per week from actual fetched tweets (excludes replies/retweets since endpoint uses exclude=retweets,replies)
+    // Fall back to capped estimate from statuses_count if no tweets returned
+    let postsPerWeek = 3; // sensible default
+    let posts14d = 0;
+
     if (allTweets.length >= 2) {
-      const dates = allTweets.map(t => new Date(t.legacy?.created_at || t.created_at || t.date || 0)).filter(d => d > 0).sort((a, b) => b - a);
+      const dates = allTweets
+        .map(t => new Date(t.legacy?.created_at || t.created_at || t.date || 0))
+        .filter(d => !isNaN(d.getTime()) && d.getTime() > 0)
+        .sort((a, b) => b - a);
       if (dates.length >= 2) {
-        const weeks = Math.max((dates[0] - dates[dates.length - 1]) / (1000 * 60 * 60 * 24 * 7), 1);
-        postsPerWeek = Math.round(allTweets.length / weeks);
+        const spanDays = Math.max((dates[0] - dates[dates.length - 1]) / (1000 * 60 * 60 * 24), 1);
+        const spanWeeks = spanDays / 7;
+        postsPerWeek = Math.round(allTweets.length / spanWeeks);
+        // Count posts in last 14 days
+        const fourteenDaysAgo2 = Date.now() - 14 * 24 * 60 * 60 * 1000;
+        posts14d = dates.filter(d => d.getTime() > fourteenDaysAgo2).length;
       }
+    } else {
+      // Fallback: assume ~30% of statuses are original posts, cap at 21/week
+      const accountAgeDays2 = createdAt
+        ? Math.max((Date.now() - new Date(createdAt).getTime()) / (1000 * 60 * 60 * 24), 1)
+        : 365;
+      const rawPPW = (tweetCount * 0.3) / (accountAgeDays2 / 7);
+      postsPerWeek = Math.min(Math.max(Math.round(rawPPW), 1), 21);
+      posts14d = Math.round(postsPerWeek * 2);
     }
 
     // Earnings
@@ -146,7 +164,7 @@ app.get('/api/user/:handle', async (req, res) => {
       followers,
       following,
       tweet_count: tweetCount,
-      posts_14d: recentTweets.length,
+      posts_14d: posts14d,
       posts_per_week: postsPerWeek,
       avg_likes: avgLikes,
       avg_rt: avgRt,

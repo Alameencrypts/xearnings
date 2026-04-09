@@ -5,13 +5,11 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>XEarnings — Creator Revenue Calculator</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <style>
-:root{--bg:#080808;--s1:#0f0f0f;--s2:#141414;--b1:rgba(255,255,255,0.06);--b2:rgba(255,255,255,0.11);--t1:#efefef;--t2:#888;--t3:#444;--acc:#d4ff00;--acc2:rgba(212,255,0,0.1);--acc3:rgba(212,255,0,0.05);--grn:#00e676;--grn2:rgba(0,230,118,0.08);--grn3:rgba(0,230,118,0.18);--red:#ff4d4d;--red2:rgba(255,77,77,0.08);--r:12px;--r2:8px;}
+:root{--bg:#080808;--s1:#0f0f0f;--s2:#141414;--b1:rgba(255,255,255,0.06);--b2:rgba(255,255,255,0.11);--t1:#efefef;--t2:#888;--t3:#444;--acc:#d4ff00;--acc2:rgba(212,255,0,0.1);--grn:#00e676;--grn2:rgba(0,230,118,0.08);--grn3:rgba(0,230,118,0.18);--red:#ff4d4d;--red2:rgba(255,77,77,0.08);--r:12px;--r2:8px;}
 *{box-sizing:border-box;margin:0;padding:0;}
 body{background:var(--bg);color:var(--t1);font-family:'Manrope',sans-serif;font-size:14px;line-height:1.6;min-height:100vh;}
-body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)' opacity='0.03'/%3E%3C/svg%3E");pointer-events:none;z-index:0;}
-.pg{position:relative;z-index:1;max-width:900px;margin:0 auto;padding:0 24px 80px;}
+.pg{max-width:900px;margin:0 auto;padding:0 24px 80px;}
 nav{display:flex;align-items:center;justify-content:space-between;padding:26px 0 44px;}
 .logo{display:flex;align-items:center;gap:10px;text-decoration:none;}
 .lx{width:32px;height:32px;background:var(--acc);border-radius:7px;display:flex;align-items:center;justify-content:center;}
@@ -26,11 +24,10 @@ h1 .ya{color:var(--acc);}
 .hero-sub{font-size:14px;color:var(--t2);max-width:480px;line-height:1.8;}
 .search-wrap{margin-bottom:32px;}
 .search-box{display:flex;gap:10px;}
-.search-input{flex:1;background:var(--s1);border:1px solid var(--b2);border-radius:var(--r);padding:14px 18px;font-family:'Manrope',sans-serif;font-size:15px;color:var(--t1);outline:none;transition:border-color .2s;}
+.search-input{flex:1;background:var(--s1);border:1px solid var(--b2);border-radius:var(--r);padding:14px 18px;font-family:'Manrope',sans-serif;font-size:15px;color:var(--t1);outline:none;}
 .search-input::placeholder{color:var(--t3);}
 .search-input:focus{border-color:rgba(212,255,0,0.4);}
-.search-btn{background:var(--acc);color:#000;border:none;border-radius:var(--r);padding:14px 28px;font-family:'Manrope',sans-serif;font-weight:800;font-size:14px;cursor:pointer;white-space:nowrap;transition:opacity .15s;}
-.search-btn:hover{opacity:.88;}
+.search-btn{background:var(--acc);color:#000;border:none;border-radius:var(--r);padding:14px 28px;font-family:'Manrope',sans-serif;font-weight:800;font-size:14px;cursor:pointer;white-space:nowrap;}
 .search-btn:disabled{opacity:.5;cursor:not-allowed;}
 .search-hint{font-size:11px;color:var(--t3);margin-top:8px;font-family:'DM Mono',monospace;}
 .err-box{background:var(--red2);border:1px solid rgba(255,77,77,0.2);color:var(--red);padding:12px 18px;border-radius:var(--r2);font-size:13px;margin-bottom:20px;display:none;}
@@ -58,10 +55,10 @@ h1 .ya{color:var(--acc);}
 .score-card.infl .score-n{color:#a78bfa;}
 .score-sub{font-size:10px;font-family:'DM Mono',monospace;color:var(--t3);margin-top:4px;}
 .score-bar-w{height:3px;background:var(--b1);border-radius:2px;margin-top:10px;overflow:hidden;}
-.score-bar-f{height:100%;border-radius:2px;transition:width .6s ease;}
+.score-bar-f{height:100%;border-radius:2px;}
 .algo-bar{background:var(--acc);}
 .infl-bar{background:#a78bfa;}
-.elig-box{border-radius:var(--r);padding:14px 18px;margin-bottom:22px;}
+.elig-box{border-radius:var(--r);padding:14px 18px;margin-bottom:22px;display:none;}
 .elig-box.ok{background:var(--grn2);border:1px solid var(--grn3);}
 .elig-box.fail{background:var(--red2);border:1px solid rgba(255,77,77,0.2);}
 .elig-row{display:flex;align-items:center;gap:8px;margin-bottom:4px;}
@@ -71,7 +68,7 @@ h1 .ya{color:var(--acc);}
 .elig-lbl{font-weight:700;font-size:13px;}
 .elig-lbl.ok{color:var(--grn);}
 .elig-lbl.fail{color:var(--red);}
-.elig-note{font-size:11px;color:rgba(0,230,118,0.5);margin-top:6px;padding-left:28px;line-height:1.5;}
+.elig-note{font-size:11px;color:rgba(0,230,118,0.5);margin-top:6px;padding-left:28px;line-height:1.5;display:none;}
 .elig-reasons{list-style:none;padding-left:28px;margin-top:6px;}
 .elig-reasons li{font-size:12px;color:rgba(255,100,100,0.9);display:flex;gap:6px;padding:1px 0;}
 .elig-reasons li::before{content:'x';font-weight:800;}
@@ -81,33 +78,6 @@ h1 .ya{color:var(--acc);}
 .payout-amount{font-family:'Bebas Neue',sans-serif;font-size:52px;color:var(--acc);line-height:1;}
 .payout-date{font-family:'DM Mono',monospace;font-size:12px;color:var(--t2);margin-top:6px;}
 .payout-note{font-size:11px;color:var(--t3);margin-top:10px;line-height:1.6;}
-
-/* SHARE CARD */
-.share-section{margin-bottom:24px;display:none;}
-.share-label{font-family:'DM Mono',monospace;font-size:10px;color:var(--t3);letter-spacing:.07em;text-transform:uppercase;margin-bottom:12px;}
-.share-card{background:#0f0f0f;border:1px solid rgba(212,255,0,0.3);border-radius:4px;padding:28px;position:relative;overflow:hidden;width:100%;}
-.share-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,transparent,#d4ff00,transparent);}
-.sc-top{display:flex;align-items:center;gap:14px;margin-bottom:20px;}
-.sc-av{width:52px;height:52px;border-radius:50%;border:2px solid rgba(212,255,0,0.4);overflow:hidden;display:flex;align-items:center;justify-content:center;background:#d4ff00;font-family:'Bebas Neue',sans-serif;font-size:20px;color:#000;flex-shrink:0;}
-.sc-av img{width:100%;height:100%;object-fit:cover;}
-.sc-name{font-weight:800;font-size:17px;color:#efefef;}
-.sc-handle{font-size:12px;color:#888;margin-top:2px;}
-.sc-xlogo{margin-left:auto;}
-.sc-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:18px;}
-.sc-stat{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:3px;padding:11px 12px;text-align:center;}
-.sc-stat-l{font-family:'DM Mono',monospace;font-size:9px;color:#555;text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px;}
-.sc-stat-v{font-family:'Bebas Neue',sans-serif;font-size:20px;color:#efefef;}
-.sc-payout{background:rgba(212,255,0,0.06);border:1px solid rgba(212,255,0,0.2);border-radius:3px;padding:16px 18px;margin-bottom:16px;}
-.sc-payout-l{font-family:'DM Mono',monospace;font-size:10px;color:#888;text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px;}
-.sc-payout-amt{font-family:'Bebas Neue',sans-serif;font-size:40px;color:#d4ff00;line-height:1;}
-.sc-payout-date{font-family:'DM Mono',monospace;font-size:10px;color:#666;margin-top:4px;}
-.sc-footer{display:flex;align-items:center;justify-content:space-between;}
-.sc-badge{font-family:'DM Mono',monospace;font-size:9px;color:#d4ff00;background:rgba(212,255,0,0.08);border:1px solid rgba(212,255,0,0.15);padding:4px 10px;border-radius:20px;}
-.sc-url{font-family:'DM Mono',monospace;font-size:9px;color:#444;}
-.dl-btn{display:flex;align-items:center;justify-content:center;gap:8px;background:var(--acc);color:#000;border:none;border-radius:4px;padding:13px 22px;font-family:'Manrope',sans-serif;font-weight:800;font-size:14px;cursor:pointer;width:100%;margin-top:12px;transition:opacity .15s;}
-.dl-btn:hover{opacity:.88;}
-.dl-btn:disabled{opacity:.5;cursor:not-allowed;}
-
 .manual-section{background:var(--s1);border:1px solid var(--b1);border-radius:var(--r);padding:22px 26px;margin-bottom:22px;display:none;}
 .section-title{font-family:'DM Mono',monospace;font-size:10px;color:var(--t2);letter-spacing:.06em;text-transform:uppercase;margin-bottom:18px;}
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
@@ -120,9 +90,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:13px;heigh
 select{width:100%;background:var(--s2);border:1px solid var(--b2);border-radius:var(--r2);color:var(--t1);padding:9px 12px;font-family:'Manrope',sans-serif;font-size:12px;cursor:pointer;outline:none;appearance:none;font-weight:500;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%23555' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;}
 footer{margin-top:40px;padding-top:18px;border-top:1px solid var(--b1);display:flex;justify-content:space-between;font-size:11px;color:var(--t3);flex-wrap:wrap;gap:6px;}
 footer a{color:var(--t2);text-decoration:none;}
-@keyframes fu{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
-.hero{animation:fu .4s ease;}
-@media(max-width:600px){.stats-grid{grid-template-columns:repeat(2,1fr);}.scores-grid{grid-template-columns:1fr;}.grid2{grid-template-columns:1fr;}.sc-stats{grid-template-columns:repeat(3,1fr);}h1{font-size:54px;}}
+@media(max-width:600px){.stats-grid{grid-template-columns:repeat(2,1fr);}.scores-grid{grid-template-columns:1fr;}.grid2{grid-template-columns:1fr;}h1{font-size:54px;}}
 </style>
 </head>
 <body>
@@ -134,13 +102,11 @@ footer a{color:var(--t2);text-decoration:none;}
   </a>
   <span class="chip" id="nav-date"></span>
 </nav>
-
 <div class="hero">
   <div class="hero-tag">Creator revenue calculator</div>
   <h1>HOW MUCH IS YOUR<br>CONTENT <span class="ya">WORTH?</span></h1>
   <p class="hero-sub">Enter any X handle to see follower stats, 14-day post count, and estimated next payout — built on X's open-sourced Grok algorithm.</p>
 </div>
-
 <div class="search-wrap">
   <div class="search-box">
     <input type="text" class="search-input" id="handle-input" placeholder="@De_Ciphera" maxlength="50">
@@ -148,9 +114,7 @@ footer a{color:var(--t2);text-decoration:none;}
   </div>
   <p class="search-hint">Enter a username with or without @ — e.g. De_Ciphera or @De_Ciphera</p>
 </div>
-
 <div class="err-box" id="err-box"></div>
-
 <div class="profile-card" id="profile-card">
   <div class="profile-bar"></div>
   <div class="profile-body">
@@ -160,7 +124,7 @@ footer a{color:var(--t2);text-decoration:none;}
         <div class="pname" id="p-name">—</div>
         <div class="phandle" id="p-handle">—</div>
         <div id="p-verified" style="display:none;" class="verified-badge">
-          <svg width="9" height="9" viewBox="0 0 24 24" fill="currentColor"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" fill="none" stroke="currentColor" stroke-width="2.5"/></svg>
+          <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
           X Premium
         </div>
       </div>
@@ -185,65 +149,27 @@ footer a{color:var(--t2);text-decoration:none;}
         <div class="score-bar-w"><div class="score-bar-f infl-bar" id="infl-bar" style="width:0%"></div></div>
       </div>
     </div>
-    <div class="elig-box" id="elig-box" style="display:none;">
+    <div class="elig-box" id="elig-box">
       <div class="elig-row">
         <div class="elig-ic" id="elig-ic">—</div>
         <div class="elig-lbl" id="elig-lbl">—</div>
       </div>
-      <div id="elig-note" class="elig-note" style="display:none;"></div>
+      <div class="elig-note" id="elig-note"></div>
       <ul class="elig-reasons" id="elig-reasons"></ul>
     </div>
   </div>
 </div>
-
 <div class="payout-card" id="payout-card">
   <div class="payout-label">Estimated next payout</div>
   <div class="payout-amount" id="payout-amount">$0.00</div>
   <div class="payout-date" id="payout-date">—</div>
   <div class="payout-note">Based on your engagement rate and posting frequency. X pays biweekly via Stripe — minimum <strong style="color:var(--t2);">$30</strong> to receive payment.</div>
 </div>
-
-<!-- SHARE CARD -->
-<div class="share-section" id="share-section">
-  <div class="share-label">Your earnings card — download &amp; share on X</div>
-  <div class="share-card" id="share-card">
-    <div class="sc-top">
-      <div class="sc-av" id="sc-av">?</div>
-      <div>
-        <div class="sc-name" id="sc-name">—</div>
-        <div class="sc-handle" id="sc-handle">—</div>
-      </div>
-      <div class="sc-xlogo">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="rgba(255,255,255,0.3)"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.748l7.73-8.835L1.254 2.25H8.08l4.253 5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
-      </div>
-    </div>
-    <div class="sc-stats">
-      <div class="sc-stat"><div class="sc-stat-l">Followers</div><div class="sc-stat-v" id="sc-fol">—</div></div>
-      <div class="sc-stat"><div class="sc-stat-l">Posts/wk</div><div class="sc-stat-v" id="sc-ppw">—</div></div>
-      <div class="sc-stat"><div class="sc-stat-l">Influence</div><div class="sc-stat-v" id="sc-infl2">—</div></div>
-    </div>
-    <div class="sc-payout">
-      <div class="sc-payout-l">Estimated next payout</div>
-      <div class="sc-payout-amt" id="sc-amt">$0.00</div>
-      <div class="sc-payout-date" id="sc-date">—</div>
-    </div>
-    <div class="sc-footer">
-      <div class="sc-badge">Jan 2026 Algorithm</div>
-      <div class="sc-url">xearnings.onrender.com</div>
-    </div>
-  </div>
-  <button class="dl-btn" id="dl-btn">
-    <svg viewBox="0 0 24 24" width="16" height="16" fill="#000"><path d="M12 16l-4-4h2.5V4h3v8H16l-4 4zm-6 4v-2h12v2H6z"/></svg>
-    Download &amp; Share on X
-  </button>
-</div>
-
 <div class="manual-section" id="manual-section">
   <div class="section-title">Adjust assumptions</div>
   <div class="grid2">
     <div>
-      <div class="sg">
-        <div class="sl"><span class="sn">Region CPM</span></div>
+      <div class="sg"><div class="sl"><span class="sn">Region CPM</span></div>
         <select id="s-reg">
           <option value="12">US / Canada — $12</option>
           <option value="9">UK / Europe — $9</option>
@@ -251,43 +177,38 @@ footer a{color:var(--t2);text-decoration:none;}
           <option value="2">W. Africa / S. Asia — $2</option>
         </select>
       </div>
-      <div class="sg">
-        <div class="sl"><span class="sn">Content niche</span></div>
+      <div class="sg"><div class="sl"><span class="sn">Content niche</span></div>
         <select id="s-niche">
-          <option value="2.2">Finance / Crypto — 2.2×</option>
-          <option value="1.8">Tech / AI — 1.8×</option>
-          <option value="1.4">News / Politics — 1.4×</option>
-          <option value="1.0" selected>Lifestyle / General — 1.0×</option>
-          <option value="0.9">Entertainment — 0.9×</option>
-          <option value="0.8">Gaming — 0.8×</option>
+          <option value="2.2">Finance / Crypto — 2.2x</option>
+          <option value="1.8">Tech / AI — 1.8x</option>
+          <option value="1.4">News / Politics — 1.4x</option>
+          <option value="1.0" selected>Lifestyle / General — 1.0x</option>
+          <option value="0.9">Entertainment — 0.9x</option>
+          <option value="0.8">Gaming — 0.8x</option>
         </select>
       </div>
     </div>
     <div>
-      <div class="sg">
-        <div class="sl"><span class="sn">Premium followers %</span><span class="sv" id="lprem">10%</span></div>
+      <div class="sg"><div class="sl"><span class="sn">Premium followers %</span><span class="sv" id="lprem">10%</span></div>
         <input type="range" id="s-prem" min="1" max="40" value="10" step="1">
       </div>
-      <div class="sg">
-        <div class="sl"><span class="sn">Content type</span></div>
+      <div class="sg"><div class="sl"><span class="sn">Content type</span></div>
         <select id="s-ctype">
-          <option value="1.4">Video (native) — 1.4×</option>
-          <option value="1.2">Threads — 1.2×</option>
-          <option value="1.1">Images — 1.1×</option>
-          <option value="1.0" selected>Text — 1.0×</option>
-          <option value="0.7">Links — 0.7×</option>
+          <option value="1.4">Video (native) — 1.4x</option>
+          <option value="1.2">Threads — 1.2x</option>
+          <option value="1.1">Images — 1.1x</option>
+          <option value="1.0" selected>Text — 1.0x</option>
+          <option value="0.7">Links — 0.7x</option>
         </select>
       </div>
     </div>
   </div>
 </div>
-
 <footer>
   <span>XEarnings — estimates only. Algorithm: xai-org/x-algorithm · Jan 2026.</span>
   <span><a href="https://github.com/xai-org/x-algorithm" target="_blank">Source</a> · <a href="https://developer.x.com" target="_blank">X Dev</a></span>
 </footer>
 </div>
-
 <script>
 var fmt = function(n){ return n.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}); };
 var fmtM = function(n){ return n>=1000000?(n/1000000).toFixed(1)+'M':n>=1000?(n/1000).toFixed(1)+'K':String(Math.round(n)); };
@@ -295,7 +216,99 @@ var currentData = null;
 
 document.getElementById('nav-date').textContent = new Date().toLocaleString('en-US',{month:'long',year:'numeric'});
 
+document.getElementById('search-btn').addEventListener('click', doCalculate);
+document.getElementById('handle-input').addEventListener('keydown', function(e){ if(e.key==='Enter') doCalculate(); });
+document.getElementById('s-reg').addEventListener('change', recalc);
+document.getElementById('s-niche').addEventListener('change', recalc);
+document.getElementById('s-ctype').addEventListener('change', recalc);
+document.getElementById('s-prem').addEventListener('input', function(){ document.getElementById('lprem').textContent=this.value+'%'; recalc(); });
+
 function doCalculate() {
   var raw = document.getElementById('handle-input').value.trim().replace('@','');
   if (!raw) return;
-  var btn = document.getElementById('search-btn'
+  var btn = document.getElementById('search-btn');
+  var err = document.getElementById('err-box');
+  btn.disabled = true;
+  btn.textContent = 'Loading...';
+  err.style.display = 'none';
+  document.getElementById('profile-card').style.display = 'none';
+  document.getElementById('payout-card').style.display = 'none';
+  document.getElementById('manual-section').style.display = 'none';
+  fetch('/api/user/' + encodeURIComponent(raw))
+    .then(function(r){ return r.json(); })
+    .then(function(data){
+      if (data.error){ err.textContent=data.error; err.style.display='block'; }
+      else { currentData=data; renderProfile(data); }
+    })
+    .catch(function(){ err.textContent='Network error. Please try again.'; err.style.display='block'; })
+    .finally(function(){ btn.disabled=false; btn.textContent='Calculate'; });
+}
+
+function renderProfile(d) {
+  var av = document.getElementById('p-av');
+  var imgUrl = d.profile_image && typeof d.profile_image === 'object' ? d.profile_image.image_url : d.profile_image;
+  if (imgUrl) {
+    var img = new Image();
+    img.onload = function(){ av.innerHTML=''; av.appendChild(img); };
+    img.onerror = function(){ av.textContent=(d.name||'?')[0]; };
+    img.src = imgUrl;
+    img.style.cssText = 'width:100%;height:100%;object-fit:cover;';
+  } else { av.textContent=(d.name||'?')[0]; }
+
+  document.getElementById('p-name').textContent = d.name||'—';
+  document.getElementById('p-handle').textContent = d.handle||'—';
+  document.getElementById('p-verified').style.display = d.is_verified ? 'inline-flex' : 'none';
+  document.getElementById('s-fol').textContent = fmtM(d.followers||0);
+  document.getElementById('s-fing').textContent = fmtM(d.following||0);
+  document.getElementById('s-14d').textContent = d.posts_14d||0;
+  document.getElementById('s-ppw').textContent = d.posts_per_week||0;
+  document.getElementById('sc-algo').textContent = Math.round(d.algo_score||0).toLocaleString();
+  document.getElementById('algo-bar').style.width = Math.min((d.algo_score||0)/20000*100,100)+'%';
+  document.getElementById('sc-infl').textContent = (d.influence_score||0).toLocaleString();
+  document.getElementById('infl-bar').style.width = ((d.influence_score||0)/10)+'%';
+  var lblEl = document.getElementById('infl-label');
+  lblEl.textContent = d.influence_label||'—';
+  var lblColors = {Elite:'#f59e0b',Established:'#a78bfa',Growing:'#4ade80',Rising:'#60a5fa',New:'#888'};
+  lblEl.style.color = lblColors[d.influence_label]||'#888';
+
+  var box = document.getElementById('elig-box');
+  var ic = document.getElementById('elig-ic');
+  var lbl = document.getElementById('elig-lbl');
+  var note = document.getElementById('elig-note');
+  var reasons = document.getElementById('elig-reasons');
+  box.style.display = 'block';
+  if (d.is_eligible) {
+    box.className='elig-box ok'; ic.className='elig-ic ok'; ic.textContent='✓';
+    lbl.className='elig-lbl ok'; lbl.textContent='Eligible for Creator Revenue Sharing';
+    note.style.display='block'; note.textContent='X may pause monetization for policy violations, account review, or other reasons not visible via API.';
+    reasons.innerHTML='';
+  } else {
+    box.className='elig-box fail'; ic.className='elig-ic fail'; ic.textContent='x';
+    lbl.className='elig-lbl fail'; lbl.textContent='Not eligible for Creator Revenue Sharing';
+    note.style.display='none';
+    reasons.innerHTML=(d.eligibility_reasons||[]).map(function(r){return '<li>'+r+'</li>';}).join('');
+  }
+
+  document.getElementById('payout-amount').textContent='$'+fmt(d.biweekly_earnings||0);
+  document.getElementById('payout-date').textContent='Next payout: '+(d.next_payout_date||'—');
+  document.getElementById('profile-card').style.display='block';
+  document.getElementById('payout-card').style.display='block';
+  document.getElementById('manual-section').style.display='block';
+}
+
+function recalc() {
+  if (!currentData) return;
+  var cpm=+(document.getElementById('s-reg').value)||5;
+  var niche=+(document.getElementById('s-niche').value)||1;
+  var prem=+(document.getElementById('s-prem').value)/100||0.1;
+  var ctype=+(document.getElementById('s-ctype').value)||1;
+  var fol=currentData.followers||1000;
+  var score=currentData.algo_score||0;
+  var posts=currentData.posts_per_week||1;
+  var reach=fol*(0.04+(score/10000)*0.06)*ctype;
+  var biweekly=(reach*prem/1000)*cpm*niche*0.525*posts*2;
+  document.getElementById('payout-amount').textContent='$'+fmt(biweekly);
+}
+</script>
+</body>
+</html>

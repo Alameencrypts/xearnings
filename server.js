@@ -49,11 +49,9 @@ app.get('/api/user/:handle', async (req, res) => {
     let allTweets = [];
     let userId = null;
     try {
-      // Use search to get recent tweets from last 90 days
-      const since = new Date(Date.now() - 90 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
-      const searchQuery = encodeURIComponent(`from:${handle} since:${since}`);
-      const tweetsUrl = `https://api.sociavault.com/v1/scrape/twitter/search?query=${searchQuery}&limit=50`;
-      console.log('Fetching tweets from:', tweetsUrl);
+      const tweetsUrl = userId
+        ? `https://api.sociavault.com/v1/scrape/twitter/user-tweets-all?user_id=${userId}&limit=50`
+        : `https://api.sociavault.com/v1/scrape/twitter/user-tweets?handle=${encodeURIComponent(handle)}&limit=50`;
       const tweetsRes = await fetch(tweetsUrl, { headers: { 'x-api-key': apiKey } });
       const tweetsData = await tweetsRes.json();
       console.log('Tweets response keys:', Object.keys(tweetsData));
@@ -64,17 +62,11 @@ app.get('/api/user/:handle', async (req, res) => {
       }
       if (tweetsData.success && tweetsData.data) {
         let raw = tweetsData.data;
-        // Search endpoint returns {tweets: [...]} or array directly
-        if (raw.tweets && Array.isArray(raw.tweets)) {
-          allTweets = raw.tweets;
-        } else if (Array.isArray(raw)) {
+        if (raw.tweets) raw = raw.tweets;
+        if (Array.isArray(raw)) {
           allTweets = raw;
         } else if (typeof raw === 'object' && raw !== null) {
-          // Filter out cursor objects, keep only tweet objects
-          allTweets = Object.values(raw).filter(v => 
-            typeof v === 'object' && v !== null && 
-            (v.legacy || v.created_at || v.full_text || v.text || v.rest_id)
-          );
+          allTweets = Object.values(raw).filter(v => typeof v === 'object' && v !== null && (v.legacy || v.rest_id));
         }
         console.log('Parsed tweets count:', allTweets.length);
         if (allTweets.length > 0) {

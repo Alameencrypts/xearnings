@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>XEarnings — Creator Revenue Calculator</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <style>
 :root{--bg:#080808;--s1:#0f0f0f;--s2:#141414;--b1:rgba(255,255,255,0.06);--b2:rgba(255,255,255,0.11);--t1:#efefef;--t2:#888;--t3:#444;--acc:#d4ff00;--acc2:rgba(212,255,0,0.1);--grn:#00e676;--grn2:rgba(0,230,118,0.08);--grn3:rgba(0,230,118,0.18);--red:#ff4d4d;--red2:rgba(255,77,77,0.08);--r:12px;--r2:8px;}
 *{box-sizing:border-box;margin:0;padding:0;}
@@ -89,38 +88,6 @@ h1 .ya{color:var(--acc);}
 input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:2px;background:var(--b2);border-radius:1px;outline:none;cursor:pointer;}
 input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:13px;height:13px;border-radius:50%;background:var(--acc);cursor:pointer;}
 select{width:100%;background:var(--s2);border:1px solid var(--b2);border-radius:var(--r2);color:var(--t1);padding:9px 12px;font-family:'Manrope',sans-serif;font-size:12px;cursor:pointer;outline:none;appearance:none;font-weight:500;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%23555' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;}
-/* SHARE CARD */
-.share-section{margin-bottom:24px;display:none;}
-.share-label{font-family:"DM Mono",monospace;font-size:10px;color:var(--t3);letter-spacing:.07em;text-transform:uppercase;margin-bottom:12px;}
-.share-card{background:#050a05;border:1px solid rgba(212,255,0,0.2);border-radius:4px;padding:28px 28px 24px;position:relative;overflow:hidden;width:100%;display:flex;align-items:center;justify-content:space-between;gap:20px;min-height:200px;}
-.share-card::before{content:"";position:absolute;inset:0;background:radial-gradient(ellipse at 80% 50%,rgba(0,230,118,0.12) 0%,transparent 65%);pointer-events:none;}
-.share-card::after{content:"";position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,#d4ff00,transparent);}
-.sc-left{flex:1;position:relative;z-index:1;}
-.sc-logo{display:flex;align-items:center;gap:8px;margin-bottom:18px;}
-.sc-logo-box{width:24px;height:24px;background:#d4ff00;border-radius:5px;display:flex;align-items:center;justify-content:center;}
-.sc-logo-box svg{width:11px;height:11px;fill:#000;}
-.sc-logo-text{font-family:"Bebas Neue",sans-serif;font-size:16px;letter-spacing:.05em;color:#efefef;}
-.sc-payout-l{font-family:"DM Mono",monospace;font-size:9px;color:#555;text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px;}
-.sc-payout-amt{font-family:"Bebas Neue",sans-serif;font-size:48px;color:#d4ff00;line-height:1;margin-bottom:4px;}
-.sc-payout-date{font-family:"DM Mono",monospace;font-size:10px;color:#666;margin-bottom:16px;}
-.sc-stats-row{display:flex;gap:16px;}
-.sc-mini{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:3px;padding:8px 12px;}
-.sc-mini-l{font-family:"DM Mono",monospace;font-size:8px;color:#444;text-transform:uppercase;letter-spacing:.05em;margin-bottom:2px;}
-.sc-mini-v{font-family:"Bebas Neue",sans-serif;font-size:16px;color:#efefef;}
-.sc-right{position:relative;z-index:1;flex-shrink:0;width:130px;display:flex;align-items:center;justify-content:center;}
-.sc-aura{position:relative;display:flex;align-items:center;justify-content:center;}
-.sc-aura::before{content:"";position:absolute;width:120px;height:120px;border-radius:50%;background:radial-gradient(circle,rgba(0,230,118,0.4) 0%,rgba(0,230,118,0.15) 40%,transparent 70%);animation:pulse 2s ease-in-out infinite;top:50%;left:50%;transform:translate(-50%,-50%);}
-.sc-aura::after{content:"";position:absolute;width:90px;height:90px;border-radius:50%;background:radial-gradient(circle,rgba(212,255,0,0.2) 0%,transparent 70%);top:50%;left:50%;transform:translate(-50%,-50%);}
-@keyframes pulse{0%,100%{opacity:.6;transform:translate(-50%,-50%) scale(1);}50%{opacity:1;transform:translate(-50%,-50%) scale(1.1);}}
-.sc-avatar{width:72px;height:72px;border-radius:50%;border:2px solid rgba(0,230,118,0.5);overflow:hidden;display:flex;align-items:center;justify-content:center;background:#d4ff00;font-family:"Bebas Neue",sans-serif;font-size:28px;color:#000;position:relative;z-index:2;box-shadow:0 0 20px rgba(0,230,118,0.4),0 0 40px rgba(0,230,118,0.15);}
-.sc-avatar img{width:100%;height:100%;object-fit:cover;}
-.sc-handle-tag{font-family:"DM Mono",monospace;font-size:9px;color:rgba(0,230,118,0.6);text-align:center;margin-top:8px;position:relative;z-index:2;}
-.sc-footer-row{display:flex;align-items:center;justify-content:space-between;margin-top:14px;}
-.sc-badge{font-family:"DM Mono",monospace;font-size:8px;color:#d4ff00;background:rgba(212,255,0,0.07);border:1px solid rgba(212,255,0,0.12);padding:3px 8px;border-radius:20px;}
-.sc-url{font-family:"DM Mono",monospace;font-size:8px;color:#333;}
-.dl-btn{display:flex;align-items:center;justify-content:center;gap:8px;background:var(--acc);color:#000;border:none;border-radius:4px;padding:13px 22px;font-family:"Manrope",sans-serif;font-weight:800;font-size:14px;cursor:pointer;width:100%;margin-top:12px;transition:opacity .15s;}
-.dl-btn:hover{opacity:.88;}
-.dl-btn:disabled{opacity:.5;cursor:not-allowed;}
 footer{margin-top:40px;padding-top:18px;border-top:1px solid var(--b1);display:flex;justify-content:space-between;font-size:11px;color:var(--t3);flex-wrap:wrap;gap:6px;}
 footer a{color:var(--t2);text-decoration:none;}
 @media(max-width:600px){.stats-grid{grid-template-columns:repeat(2,1fr);}.scores-grid{grid-template-columns:1fr;}.grid2{grid-template-columns:1fr;}h1{font-size:54px;}}
@@ -154,8 +121,8 @@ footer a{color:var(--t2);text-decoration:none;}
     <div class="profile-top">
       <div class="pav" id="p-av">?</div>
       <div>
-        <div class="pname" id="p-name">—</div>
-        <div class="phandle" id="p-handle">—</div>
+        <div class="pname" id="p-name">-</div>
+        <div class="phandle" id="p-handle">-</div>
         <div id="p-verified" style="display:none;" class="verified-badge">
           <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
           X Premium
@@ -163,29 +130,29 @@ footer a{color:var(--t2);text-decoration:none;}
       </div>
     </div>
     <div class="stats-grid">
-      <div class="stat"><div class="stat-l">Followers</div><div class="stat-v" id="s-fol">—</div></div>
-      <div class="stat"><div class="stat-l">Following</div><div class="stat-v" id="s-fing">—</div></div>
-      <div class="stat"><div class="stat-l">Posts (14d)</div><div class="stat-v acc" id="s-14d">—</div></div>
-      <div class="stat"><div class="stat-l">Posts / week</div><div class="stat-v" id="s-ppw">—</div></div>
+      <div class="stat"><div class="stat-l">Followers</div><div class="stat-v" id="s-fol">-</div></div>
+      <div class="stat"><div class="stat-l">Following</div><div class="stat-v" id="s-fing">-</div></div>
+      <div class="stat"><div class="stat-l">Posts (14d)</div><div class="stat-v acc" id="s-14d">-</div></div>
+      <div class="stat"><div class="stat-l">Posts / week</div><div class="stat-v" id="s-ppw">-</div></div>
     </div>
     <div class="scores-grid">
       <div class="score-card algo">
         <div class="score-l">X Algorithm Score</div>
         <div class="score-n" id="sc-algo">0</div>
-        <div class="score-sub">likes×1 + rt×20 + rep×13.5 + bm×10</div>
+        <div class="score-sub">likes x1 + rt x20 + rep x13.5 + bm x10</div>
         <div class="score-bar-w"><div class="score-bar-f algo-bar" id="algo-bar" style="width:0%"></div></div>
       </div>
       <div class="score-card infl">
         <div class="score-l">Influence Score</div>
         <div class="score-n" id="sc-infl">0</div>
-        <div class="score-sub" id="infl-label">—</div>
+        <div class="score-sub" id="infl-label">-</div>
         <div class="score-bar-w"><div class="score-bar-f infl-bar" id="infl-bar" style="width:0%"></div></div>
       </div>
     </div>
     <div class="elig-box" id="elig-box">
       <div class="elig-row">
-        <div class="elig-ic" id="elig-ic">—</div>
-        <div class="elig-lbl" id="elig-lbl">—</div>
+        <div class="elig-ic" id="elig-ic">-</div>
+        <div class="elig-lbl" id="elig-lbl">-</div>
       </div>
       <div class="elig-note" id="elig-note"></div>
       <ul class="elig-reasons" id="elig-reasons"></ul>
@@ -195,64 +162,29 @@ footer a{color:var(--t2);text-decoration:none;}
 <div class="payout-card" id="payout-card">
   <div class="payout-label">Estimated next payout</div>
   <div class="payout-amount" id="payout-amount">$0.00</div>
-  <div class="payout-date" id="payout-date">—</div>
+  <div class="payout-date" id="payout-date">-</div>
   <div class="payout-note">Based on your engagement rate and posting frequency. X pays biweekly via Stripe — minimum <strong style="color:var(--t2);">$30</strong> to receive payment.</div>
 </div>
-<!-- SHARE CARD -->
-<div class="share-section" id="share-section">
-  <div class="share-label">Your earnings card — download and share on X</div>
-  <div class="share-card" id="share-card">
-    <div class="sc-left">
-      <div class="sc-logo">
-        <div class="sc-logo-box"><svg viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.748l7.73-8.835L1.254 2.25H8.08l4.253 5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg></div>
-        <div class="sc-logo-text">XEarnings</div>
-      </div>
-      <div class="sc-payout-l">Estimated next payout</div>
-      <div class="sc-payout-amt" id="sc-amt">$0.00</div>
-      <div class="sc-payout-date" id="sc-date">—</div>
-      <div class="sc-stats-row">
-        <div class="sc-mini"><div class="sc-mini-l">Followers</div><div class="sc-mini-v" id="sc-fol">—</div></div>
-        <div class="sc-mini"><div class="sc-mini-l">Posts/wk</div><div class="sc-mini-v" id="sc-ppw">—</div></div>
-        <div class="sc-mini"><div class="sc-mini-l">Influence</div><div class="sc-mini-v" id="sc-infl2">—</div></div>
-      </div>
-      <div class="sc-footer-row">
-        <div class="sc-badge">xai-org algorithm</div>
-        <div class="sc-url">xearnings.onrender.com</div>
-      </div>
-    </div>
-    <div class="sc-right">
-      <div class="sc-aura">
-        <div class="sc-avatar" id="sc-av">?</div>
-      </div>
-      <div class="sc-handle-tag" id="sc-handle">—</div>
-    </div>
-  </div>
-  <button class="dl-btn" id="dl-btn">
-    <svg viewBox="0 0 24 24" width="16" height="16" fill="#000"><path d="M12 16l-4-4h2.5V4h3v8H16l-4 4zm-6 4v-2h12v2H6z"/></svg>
-    Download and Share on X
-  </button>
-</div>
-
 <div class="manual-section" id="manual-section">
   <div class="section-title">Adjust assumptions</div>
   <div class="grid2">
     <div>
       <div class="sg"><div class="sl"><span class="sn">Region CPM</span></div>
         <select id="s-reg">
-          <option value="12">US / Canada — $12</option>
-          <option value="9">UK / Europe — $9</option>
-          <option value="5" selected>Global — $5</option>
-          <option value="2">W. Africa / S. Asia — $2</option>
+          <option value="12">US / Canada $12</option>
+          <option value="9">UK / Europe $9</option>
+          <option value="5" selected>Global $5</option>
+          <option value="2">W. Africa / S. Asia $2</option>
         </select>
       </div>
       <div class="sg"><div class="sl"><span class="sn">Content niche</span></div>
         <select id="s-niche">
-          <option value="2.2">Finance / Crypto — 2.2x</option>
-          <option value="1.8">Tech / AI — 1.8x</option>
-          <option value="1.4">News / Politics — 1.4x</option>
-          <option value="1.0" selected>Lifestyle / General — 1.0x</option>
-          <option value="0.9">Entertainment — 0.9x</option>
-          <option value="0.8">Gaming — 0.8x</option>
+          <option value="2.2">Finance / Crypto 2.2x</option>
+          <option value="1.8">Tech / AI 1.8x</option>
+          <option value="1.4">News / Politics 1.4x</option>
+          <option value="1.0" selected>Lifestyle / General 1.0x</option>
+          <option value="0.9">Entertainment 0.9x</option>
+          <option value="0.8">Gaming 0.8x</option>
         </select>
       </div>
     </div>
@@ -262,19 +194,107 @@ footer a{color:var(--t2);text-decoration:none;}
       </div>
       <div class="sg"><div class="sl"><span class="sn">Content type</span></div>
         <select id="s-ctype">
-          <option value="1.4">Video (native) — 1.4x</option>
-          <option value="1.2">Threads — 1.2x</option>
-          <option value="1.1">Images — 1.1x</option>
-          <option value="1.0" selected>Text — 1.0x</option>
-          <option value="0.7">Links — 0.7x</option>
+          <option value="1.4">Video 1.4x</option>
+          <option value="1.2">Threads 1.2x</option>
+          <option value="1.1">Images 1.1x</option>
+          <option value="1.0" selected>Text 1.0x</option>
+          <option value="0.7">Links 0.7x</option>
         </select>
       </div>
     </div>
   </div>
 </div>
 <footer>
-  <span>XEarnings — estimates only. Algorithm: xai-org/x-algorithm · Jan 2026.</span>
-  <span><a href="https://github.com/xai-org/x-algorithm" target="_blank">Source</a> · <a href="https://developer.x.com" target="_blank">X Dev</a></span>
+  <span>XEarnings estimates only. Algorithm: xai-org/x-algorithm Jan 2026.</span>
+  <span><a href="https://developer.x.com" target="_blank">X Dev</a></span>
 </footer>
 </div>
-<script> 
+<script>
+var fmt=function(n){return n.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});};
+var fmtM=function(n){return n>=1000000?(n/1000000).toFixed(1)+'M':n>=1000?(n/1000).toFixed(1)+'K':String(Math.round(n));};
+var currentData=null;
+document.getElementById('nav-date').textContent=new Date().toLocaleString('en-US',{month:'long',year:'numeric'});
+document.getElementById('search-btn').addEventListener('click',doCalculate);
+document.getElementById('handle-input').addEventListener('keydown',function(e){if(e.key==='Enter')doCalculate();});
+document.getElementById('s-reg').addEventListener('change',recalc);
+document.getElementById('s-niche').addEventListener('change',recalc);
+document.getElementById('s-ctype').addEventListener('change',recalc);
+document.getElementById('s-prem').addEventListener('input',function(){document.getElementById('lprem').textContent=this.value+'%';recalc();});
+function doCalculate(){
+  var raw=document.getElementById('handle-input').value.trim().replace('@','');
+  if(!raw)return;
+  var btn=document.getElementById('search-btn');
+  var err=document.getElementById('err-box');
+  btn.disabled=true;btn.textContent='Loading...';
+  err.style.display='none';
+  document.getElementById('profile-card').style.display='none';
+  document.getElementById('payout-card').style.display='none';
+  document.getElementById('manual-section').style.display='none';
+  fetch('/api/user/'+encodeURIComponent(raw))
+    .then(function(r){return r.json();})
+    .then(function(data){
+      if(data.error){err.textContent=data.error;err.style.display='block';}
+      else{currentData=data;renderProfile(data);}
+    })
+    .catch(function(){err.textContent='Network error. Please try again.';err.style.display='block';})
+    .finally(function(){btn.disabled=false;btn.textContent='Calculate';});
+}
+function renderProfile(d){
+  var av=document.getElementById('p-av');
+  var imgUrl=d.profile_image&&typeof d.profile_image==='object'?d.profile_image.image_url:d.profile_image;
+  if(imgUrl){var img=new Image();img.onload=function(){av.innerHTML='';av.appendChild(img);};img.onerror=function(){av.textContent=(d.name||'?')[0];};img.src=imgUrl;img.style.cssText='width:100%;height:100%;object-fit:cover;';}
+  else{av.textContent=(d.name||'?')[0];}
+  document.getElementById('p-name').textContent=d.name||'-';
+  document.getElementById('p-handle').textContent=d.handle||'-';
+  document.getElementById('p-verified').style.display=d.is_verified?'inline-flex':'none';
+  document.getElementById('s-fol').textContent=fmtM(d.followers||0);
+  document.getElementById('s-fing').textContent=fmtM(d.following||0);
+  document.getElementById('s-14d').textContent=d.posts_14d||0;
+  document.getElementById('s-ppw').textContent=d.posts_per_week||0;
+  document.getElementById('sc-algo').textContent=Math.round(d.algo_score||0).toLocaleString();
+  document.getElementById('algo-bar').style.width=Math.min((d.algo_score||0)/20000*100,100)+'%';
+  document.getElementById('sc-infl').textContent=(d.influence_score||0).toLocaleString();
+  document.getElementById('infl-bar').style.width=((d.influence_score||0)/10)+'%';
+  var lblEl=document.getElementById('infl-label');
+  lblEl.textContent=d.influence_label||'-';
+  var lblColors={Elite:'#f59e0b',Established:'#a78bfa',Growing:'#4ade80',Rising:'#60a5fa',New:'#888'};
+  lblEl.style.color=lblColors[d.influence_label]||'#888';
+  var box=document.getElementById('elig-box');
+  var ic=document.getElementById('elig-ic');
+  var lbl=document.getElementById('elig-lbl');
+  var note=document.getElementById('elig-note');
+  var reasons=document.getElementById('elig-reasons');
+  box.style.display='block';
+  if(d.is_eligible){
+    box.className='elig-box ok';ic.className='elig-ic ok';ic.textContent='v';
+    lbl.className='elig-lbl ok';lbl.textContent='Eligible for Creator Revenue Sharing';
+    note.style.display='block';note.textContent='X may pause monetization for policy violations, account review, or other reasons not visible via API.';
+    reasons.innerHTML='';
+  }else{
+    box.className='elig-box fail';ic.className='elig-ic fail';ic.textContent='x';
+    lbl.className='elig-lbl fail';lbl.textContent='Not eligible for Creator Revenue Sharing';
+    note.style.display='none';
+    reasons.innerHTML=(d.eligibility_reasons||[]).map(function(r){return '<li>'+r+'</li>';}).join('');
+  }
+  document.getElementById('payout-amount').textContent='$'+fmt(d.biweekly_earnings||0);
+  document.getElementById('payout-date').textContent='Next payout: '+(d.next_payout_date||'-');
+  document.getElementById('profile-card').style.display='block';
+  document.getElementById('payout-card').style.display='block';
+  document.getElementById('manual-section').style.display='block';
+}
+function recalc(){
+  if(!currentData)return;
+  var cpm=+(document.getElementById('s-reg').value)||5;
+  var niche=+(document.getElementById('s-niche').value)||1;
+  var prem=+(document.getElementById('s-prem').value)/100||0.1;
+  var ctype=+(document.getElementById('s-ctype').value)||1;
+  var fol=currentData.followers||1000;
+  var score=currentData.algo_score||0;
+  var posts=currentData.posts_per_week||1;
+  var reach=fol*(0.04+(score/10000)*0.06)*ctype;
+  var biweekly=(reach*prem/1000)*cpm*niche*0.525*posts*2;
+  document.getElementById('payout-amount').textContent='$'+fmt(biweekly);
+}
+</script>
+</body>
+</html>

@@ -40,11 +40,10 @@ h1 .ya{color:var(--acc);}
 .pname{font-weight:800;font-size:18px;}
 .phandle{font-size:13px;color:var(--t2);margin-top:2px;}
 .verified-badge{display:inline-flex;align-items:center;gap:4px;font-family:'DM Mono',monospace;font-size:9px;color:var(--acc);background:var(--acc2);border:1px solid rgba(212,255,0,0.2);padding:3px 8px;border-radius:20px;margin-top:4px;}
-.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:22px;}
+.stats-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:22px;max-width:400px;}
 .stat{background:var(--s2);border:1px solid var(--b1);border-radius:var(--r2);padding:13px 15px;}
 .stat-l{font-size:9px;color:var(--t3);font-weight:700;letter-spacing:.05em;text-transform:uppercase;margin-bottom:5px;}
 .stat-v{font-family:'DM Mono',monospace;font-size:17px;color:var(--t1);}
-.stat-v.acc{color:var(--acc);}
 .scores-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:22px;}
 .score-card{background:var(--s2);border:1px solid var(--b1);border-radius:var(--r2);padding:14px;text-align:center;}
 .score-card.algo{border-color:rgba(212,255,0,0.2);}
@@ -90,7 +89,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:13px;heigh
 select{width:100%;background:var(--s2);border:1px solid var(--b2);border-radius:var(--r2);color:var(--t1);padding:9px 12px;font-family:'Manrope',sans-serif;font-size:12px;cursor:pointer;outline:none;appearance:none;font-weight:500;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%23555' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;}
 footer{margin-top:40px;padding-top:18px;border-top:1px solid var(--b1);display:flex;justify-content:space-between;font-size:11px;color:var(--t3);flex-wrap:wrap;gap:6px;}
 footer a{color:var(--t2);text-decoration:none;}
-@media(max-width:600px){.stats-grid{grid-template-columns:repeat(2,1fr);}.scores-grid{grid-template-columns:1fr;}.grid2{grid-template-columns:1fr;}h1{font-size:54px;}}
+@media(max-width:600px){.scores-grid{grid-template-columns:1fr;}.grid2{grid-template-columns:1fr;}h1{font-size:54px;}}
 </style>
 </head>
 <body>
@@ -129,7 +128,7 @@ footer a{color:var(--t2);text-decoration:none;}
         </div>
       </div>
     </div>
-    <div class="stats-grid" style="grid-template-columns:repeat(2,1fr);max-width:400px;">
+    <div class="stats-grid">
       <div class="stat"><div class="stat-l">Followers</div><div class="stat-v" id="s-fol">-</div></div>
       <div class="stat"><div class="stat-l">Following</div><div class="stat-v" id="s-fing">-</div></div>
     </div>
@@ -247,8 +246,6 @@ function renderProfile(d){
   document.getElementById('p-verified').style.display=d.is_verified?'inline-flex':'none';
   document.getElementById('s-fol').textContent=fmtM(d.followers||0);
   document.getElementById('s-fing').textContent=fmtM(d.following||0);
-  document.getElementById('s-14d').textContent=d.posts_14d||0;
-  document.getElementById('s-ppw').textContent=d.posts_per_week||0;
   document.getElementById('sc-algo').textContent=Math.round(d.algo_score||0).toLocaleString();
   document.getElementById('algo-bar').style.width=Math.min((d.algo_score||0)/20000*100,100)+'%';
   document.getElementById('sc-infl').textContent=(d.influence_score||0).toLocaleString();

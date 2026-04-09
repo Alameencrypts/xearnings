@@ -60,13 +60,25 @@ app.get('/api/user/:handle', async (req, res) => {
         console.log('First tweet sample:', JSON.stringify(Array.isArray(tweetsData.data) ? tweetsData.data[0] : tweetsData.data).slice(0, 300));
       }
       if (tweetsData.success && tweetsData.data) {
-        // SociaVault returns tweets as object with numeric keys {"0": tweet, "1": tweet}
-        const raw = tweetsData.data.tweets || tweetsData.data;
+        // Try all possible response structures
+        let raw = tweetsData.data;
+        if (raw.tweets) raw = raw.tweets;
+        else if (raw.results) raw = raw.results;
+        
         if (Array.isArray(raw)) {
           allTweets = raw;
         } else if (typeof raw === 'object' && raw !== null) {
-          allTweets = Object.values(raw);
+          allTweets = Object.values(raw).filter(v => typeof v === 'object' && v !== null);
         }
+        console.log('Parsed tweets count:', allTweets.length);
+        if (allTweets.length > 0) {
+          const t = allTweets[0];
+          const dateStr = t.legacy?.created_at || t.created_at || t.date || 'NO DATE';
+          console.log('First tweet date:', dateStr);
+          console.log('First tweet keys:', Object.keys(t).join(','));
+        }
+      } else {
+        console.log('Tweets fetch failed:', JSON.stringify(tweetsData).slice(0, 200));
       }
     } catch (e) {
       console.log('Tweets fetch failed:', e.message);

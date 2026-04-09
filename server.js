@@ -121,21 +121,23 @@ app.get('/api/user/:handle', async (req, res) => {
         .map(t => new Date(t.legacy?.created_at || t.created_at || t.date || 0))
         .filter(d => !isNaN(d.getTime()) && d.getTime() > 0)
         .sort((a, b) => b - a);
+      console.log('Tweet date range:', dates[0], 'to', dates[dates.length-1]);
       if (dates.length >= 2) {
         const spanDays = Math.max((dates[0] - dates[dates.length - 1]) / (1000 * 60 * 60 * 24), 1);
         const spanWeeks = spanDays / 7;
-        postsPerWeek = Math.round(allTweets.length / spanWeeks);
-        // Count posts in last 14 days
-        const fourteenDaysAgo2 = Date.now() - 14 * 24 * 60 * 60 * 1000;
-        posts14d = dates.filter(d => d.getTime() > fourteenDaysAgo2).length;
+        // postsPerWeek from tweet span
+        postsPerWeek = Math.max(Math.round(allTweets.length / spanWeeks), 1);
+        // 14d estimate = postsPerWeek * 2 (since tweets endpoint returns older data)
+        posts14d = Math.round(postsPerWeek * 2);
+        console.log('Span days:', spanDays, 'PPW:', postsPerWeek, '14d:', posts14d);
       }
     } else {
-      // Fallback: assume ~30% of statuses are original posts, cap at 21/week
+      // Fallback from statuses_count
       const accountAgeDays2 = createdAt
         ? Math.max((Date.now() - new Date(createdAt).getTime()) / (1000 * 60 * 60 * 24), 1)
         : 365;
       const rawPPW = (tweetCount * 0.3) / (accountAgeDays2 / 7);
-      postsPerWeek = Math.min(Math.max(Math.round(rawPPW), 1), 21);
+      postsPerWeek = Math.min(Math.max(Math.round(rawPPW), 1), 14);
       posts14d = Math.round(postsPerWeek * 2);
     }
 
